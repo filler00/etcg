@@ -6,6 +6,7 @@
 	
 	$id = intval($_GET['id']);
 	$database = new Database;
+	$upload = new Upload;
 
 	$tcginfo = $database->get_assoc("SELECT * FROM `tcgs` WHERE `id`='$id' LIMIT 1");
 	$altname = strtolower(str_replace(' ','',$tcginfo['name']));
@@ -21,9 +22,11 @@
 		$auto = intval($_POST['auto']);
 		$priority = intval($_POST['priority']);
 		$autourl = $sanitize->for_db($_POST['autourl']);
+		$format = $sanitize->for_db($_POST['format']);
 		
 		if ( $autourl != 'default' && $autourl != '' && substr($autourl, -1) != '/' ) { $autourl = "$autourl/"; }
 		if ( $autourl == '' ) { $autourl = 'default'; }
+		if ( $format == '' ) { $format = 'default'; }
 		if ( $worth === '' ) { $worth = 1; }
 		
 		if ( $category == '' ) { $error[] = "The category name must be defined."; }
@@ -45,24 +48,20 @@
 				if ( $tcginfo['autoupload'] == 1 && $auto == 1 ) {
 					foreach ( $cards as $card ) {
 						if ( !isset($error) ) {
-							$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
 						
-							if ( !file_exists($filename) ) {
-								
-								if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-								else { $defaultauto = $autourl; }
-								$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-								
-								if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-								else {
-									if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename"; }	
-									else {
-										if ( !isset($success) || (isset($success) && !in_array("All missing cards have been uploaded",$success)) ) {
-											$success[] = "All missing cards have been uploaded";
-										}
-									}
+							if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+							else { $defaultauto = $autourl; }
+							
+							if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+							else { $formatval = $format; }
+
+							$upsuccess = $upload->card($tcginfo,'','cards',$card,$defaultauto,$formatval);
+									
+							if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+							else if ( $upsuccess === true ) { 
+								if ( !isset($success) || (isset($success) && !in_array("All missing cards have been uploaded",$success)) ) {
+									$success[] = "All missing cards have been uploaded";
 								}
-								
 							}
 						
 						}
@@ -73,7 +72,7 @@
 				$cards = implode(', ',$cards);
 			}
 		
-			$result = $database->query("UPDATE `cards` SET `category`='$category', `cards`='$cards', `worth`='$worth', `auto`='$auto', `autourl`='$autourl', `priority`='$priority' WHERE `id`='$catid' LIMIT 1");
+			$result = $database->query("UPDATE `cards` SET `category`='$category', `cards`='$cards', `worth`='$worth', `auto`='$auto', `autourl`='$autourl', `format`='$format', `priority`='$priority' WHERE `id`='$catid' LIMIT 1");
 			if ( !$result ) { $error[] = "Could not update the category. ".mysql_error().""; }
 			else { $success[] = "Category <em>$category</em> was updated successfully!"; }
 		
@@ -146,7 +145,7 @@
     <form action="cards.php?id=<?php echo $id; ?>" method="post">
 	<p><strong>New Category</strong>: <input name="category" type="text" id="category" value="category name" onfocus="if (this.value=='category name') this.value='';" onblur="if (this.value=='') this.value='category name';"> 
     <input name="worth" type="text" id="worth" value="worth" size="5" onfocus="if (this.value=='worth') this.value='';" onblur="if (this.value=='') this.value='worth';"> 
-	<input name="autourl" type="text" id="autourl" value="default"> 
+	<input name="autourl" type="text" id="autourl" value="default">	
 	<input name="auto" type="checkbox" value="1" id="auto"> <input name="newcat" type="submit" value="Go" id="newcat"></p>
     </form>
         
@@ -161,7 +160,7 @@
                 <td class="top" colspan="4"><?php echo $row['category']; ?> <a href="cards.php?id=<?php echo $id; ?>&action=delete&cat=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this category? The contents will be lost completely.'); return go;"><img src="images/delete.gif" alt="delete" style="float:right;" /></a></td>
             </tr><tr class="xlight">
                 <td width="200" colspan="3"><input name="category" type="text" id="category" value="<?php echo $row['category']; ?>" size="40"></td>
-                <td rowspan="3"><textarea name="cards" cols="75" rows="7" id="cards" style="font-size: 10px; font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?php echo $row['cards']; ?></textarea></td>
+                <td rowspan="4"><textarea name="cards" cols="75" rows="12" id="cards" style="font-size: 10px; font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?php echo $row['cards']; ?></textarea></td>
             </tr>
             <tr class="xlight">
               <td align="center">worth<br /> <input name="worth" type="text" id="worth" value="<?php echo $row['worth']; ?>" size="2"></td>
@@ -177,6 +176,10 @@
             <tr class="xlight">
               <td colspan="3">auto url: 
                 <input name="autourl" type="text" id="autourl" value="<?php echo $row['autourl']; ?>" size="25"></td>
+            </tr>
+			<tr class="xlight">
+              <td colspan="3">format: 
+                <input name="format" type="text" id="format" value="<?php echo $row['format']; ?>" size="25"></td>
             </tr>
             <tr>
             	<td colspan="4" align="right" class="xdark"><input name="update" type="submit" id="update" value="Update"> <input name="reset" type="reset" id="reset" value="Reset"></td>

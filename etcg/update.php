@@ -21,6 +21,8 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 } else if ( $_GET['id'] != '' ) {
 
 	$database = new Database;
+	$upload = new Upload;
+	
 	function trim_value(&$value) { $value = trim($value); }
 	
 	$id = intval($_GET['id']);
@@ -109,28 +111,24 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 									$collectingcards = $collectinginfo['cards'];
 									$collectingauto = $collectinginfo['auto'];
 									$autourl = $collectinginfo['uploadurl'];
+									$format = $collectinginfo['format'];
 									if ( $collectingcards === '' ) { $collectingcards = $card; } else { $collectingcards = "$collectingcards, $card"; }
 									$result = $database->query("UPDATE `collecting` SET `cards`='$collectingcards' WHERE `id`='$collectingid' LIMIT 1");
 									if ( !$result ) { $error[] = "Failed to add $card to a collecting deck."; }
 									else { $success[] = "Added $card to the $deck collecting deck."; }
 									
 									if ( $tcginfo['autoupload'] == 1 && $collectingauto == 1 ) {
-	
-										$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
+										
+										if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+										else { $defaultauto = $autourl; }
+										
+										if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+										else { $formatval = $format; }
+											
+										$upsuccess = $upload->card($tcginfo,$collectinginfo,'collecting',$card);
 									
-										if ( !file_exists($filename) ) {
-											
-											if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-											else { $defaultauto = $autourl; }
-											$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-											
-											if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-											else {
-												if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename"; }	
-												else { $success[] = "Uploaded $card.".$tcginfo['format']."."; }
-											}
-											
-										}
+										if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+										else if ( $upsuccess === true ) { $success[] = "Uploaded $card.$formatval."; }
 												
 									}
 									
@@ -142,10 +140,11 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 						
 						else {
 						
-							$catinfo = $database->get_assoc("SELECT `cards`, `auto`, `autourl` FROM `cards` WHERE `tcg`='$id' AND `category`='".$cardscat[$i]."'");
+							$catinfo = $database->get_assoc("SELECT * FROM `cards` WHERE `tcg`='$id' AND `category`='".$cardscat[$i]."'");
 							$catcards = $catinfo['cards'];
 							$catauto = $catinfo['auto'];
 							$autourl = $catinfo['autourl'];
+							$format = $catinfo['format'];
 							
 							if ( $catcards === '' ) { $catcards = $cardgroup; } else { $catcards = ''.$catcards.', '.$cardgroup.''; }
 							
@@ -155,21 +154,17 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 							if ( $tcginfo['autoupload'] == 1 && $catauto == 1 ) {
 								foreach ( $catcards as $card ) {
 									if ( !isset($error) ) {
-										$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
+										
+										if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+										else { $defaultauto = $autourl; }
+										
+										if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+										else { $formatval = $format; }
+										
+										$upsuccess = $upload->card($tcginfo,$catinfo,'cards',$card);
 									
-										if ( !file_exists($filename) ) {
-											
-											if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-											else { $defaultauto = $autourl; }
-											$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-											
-											if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-											else {
-												if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename."; }	
-												else { $success[] = "Uploaded $card.".$tcginfo['format']."."; }
-											}
-											
-										}
+										if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+										else if ( $upsuccess === true ) { $success[] = "Uploaded $card.$formatval."; }
 									
 									}
 								}

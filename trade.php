@@ -1,5 +1,5 @@
-<?php
-
+<?php define('VALID_INC', TRUE); include_once 'func.php';
+	
 	if ( isset($_POST['tradesubmit']) ) {
 		
 		$database = new Database;

@@ -1,18 +1,6 @@
 <?php  if ( ! defined('VALID_INC') ) exit('No direct script access allowed');
 
-//****************** EASYTCG FM CLASS LIBRARY ******************//
-
-// CHANGE SETTINGS BELOW TO MATCH YOUR EASYTCG FM DATABASE SETTINGS
-class Config {
-
-	const DB_SERVER = 'localhost', // In most cases, you can leave this as 'localhost'. If you're unsure, check with your host.
-		  DB_USER = 'dbuser', // Database user
-		  DB_PASSWORD = 'dbpassword', // Database user password
-		  DB_DATABASE = 'dbdatabase', // Database name
-		  DB_SALT = 'aEF#TGgs-!dgaw3324_WQ+'; // This is your password salt. Feel free to keep the default value, but it is advised that you change it. Treat it like a high security password.
-
-}
-// DO NOT EDIT PAST THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
+require_once('config.php');
 
 class Sanitize {
 	
@@ -234,6 +222,40 @@ class Email {
 		}
 		
 		else { return true; }
+
+	}
+
+}
+
+class Upload {
+
+	function card( $tcginfo, $catinfo = '', $table, $card, $defaultauto = '', $format = '' ) {
+			
+		if ( $catinfo != '' ) {
+			if ( $catinfo['format'] == 'default' ) { $format = $tcginfo['format']; }
+			else { $format = $catinfo['format']; }
+	
+			if ( $table == 'collecting' ) {
+				if ( $catinfo['uploadurl'] == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+				else { $defaultauto = $catinfo['uploadurl']; }
+			} else {
+				if ( $catinfo['autourl'] == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+				else { $defaultauto = $catinfo['autourl']; }
+			}
+		}
+		
+		$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$format.'';
+		$imgurl = ''.$defaultauto.''.$card.'.'.$format.'';
+			
+		if ( !file_exists($filename) ) {
+			
+			if ( !$img = file_get_contents($imgurl) ) { return false; }
+			else {
+				if ( !file_put_contents($filename,$img) ) { return false; }	
+				else { return true; }
+			}
+			
+		} else { return 0; };
 
 	}
 

@@ -1,6 +1,7 @@
 <?php include 'header.php';
 
 $database = new Database;
+$upload = new Upload;
 function trim_value(&$value) { $value = trim($value); }
 
 if ( isset($_POST['remove']) ) {
@@ -171,29 +172,23 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 								$collectingcards = $collectinginfo['cards'];
 								$collectingauto = $collectinginfo['auto'];
 								$autourl = $collectinginfo['uploadurl'];
+								$format = $collectinginfo['format'];
 								if ( $collectingcards === '' ) { $collectingcards = $card; } else { $collectingcards = "$collectingcards, $card"; }
 								$result = $database->query("UPDATE `collecting` SET `cards`='$collectingcards' WHERE `id`='$collectingid' LIMIT 1");
 								if ( !$result ) { $error[] = "Failed to add $card to a collecting deck."; }
 								else { $success[] = "Added $card to the $deck collecting deck."; }
 								
 								if ( $tcginfo['autoupload'] == 1 && $collectingauto == 1 ) {
-
-									$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
-								
-									if ( !file_exists($filename) ) {
+									if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+									else { $defaultauto = $autourl; }
 										
-										if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-										else { $defaultauto = $autourl; }
-										$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-										
-										if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-										else {
-											if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename"; }	
-											else { $success[] = "Uploaded $card.".$tcginfo['format']."."; }
-										}
-										
-									}
-											
+									if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+									else { $formatval = $format; }
+									
+									$upsuccess = $upload->card($tcginfo,$collectinginfo,'collecting',$card);
+									
+									if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+									else if ( $upsuccess === true ) { $success[] = "Uploaded $card.$formatval."; }
 								}
 								
 							}
@@ -204,10 +199,12 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 					
 					else {
 					
-						$catinfo = $database->get_assoc("SELECT `cards`, `auto`, `autourl` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='".$receivingcat[$i]."'");
+						$catinfo = $database->get_assoc("SELECT `format`, `cards`, `auto`, `autourl` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='".$receivingcat[$i]."'");
 						$catcards = $catinfo['cards'];
 						$catauto = $catinfo['auto'];
 						$autourl = $catinfo['autourl'];
+						if ( $catinfo['format'] == 'default' ) { $format = $tcginfo['format']; }
+						else { $format = $catinfo['format']; }
 						
 						if ( $catcards === '' ) { $catcards = $cardgroup; } else { $catcards = ''.$catcards.', '.$cardgroup.''; }
 						
@@ -215,25 +212,16 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 						array_walk($catcards, 'trim_value');
 						
 						if ( $tcginfo['autoupload'] == 1 && $catauto == 1 ) {
+							
 							foreach ( $catcards as $card ) {
-								if ( !isset($error) ) {
-									$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
-								
-									if ( !file_exists($filename) ) {
-										
-										if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-										else { $defaultauto = $autourl; }
-										$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-										
-										if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-										else {
-											if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename."; }	
-											else { $success[] = "Uploaded $card.".$tcginfo['format']."."; }
-										}
-										
-									}
-								
-								}
+							
+								if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+								else { $defaultauto = $autourl; }
+									
+								$upsuccess = $upload->card($tcginfo,$catinfo,'cards',$card);
+									
+								if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$format from $defaultauto"; }
+								else if ( $upsuccess === true ) { $success[] = "Uploaded $card.$format."; }
 							}
 						}
 						
@@ -249,6 +237,40 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 				
 				$i++;
 				
+			}
+			
+			//build list of card image links for email
+			if ( $emailcards == 1 ) {
+				$i = 0;
+				
+				foreach ( $giving as $cardgroup ) {
+					
+					$cardgroup = explode(',',$cardgroup);
+					array_walk($cardgroup, 'trim_value');
+					
+					foreach ( $cardgroup as $card ) {
+						
+						$deck = preg_replace('/[^a-z_-]{2,3}$/i', '', $card);
+						if ( $givingcat[$i] == 'collecting' ) {
+							if ( $database->num_rows("SELECT `format` FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1") == 0 ) {
+								$catinfo = '';
+							}
+							else {
+								$catinfo = $database->get_assoc("SELECT `format` FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
+							}
+						} else {
+							$catinfo = $database->get_assoc("SELECT `format` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='".$givingcat[$i]."'");
+						}
+						
+						if ( $catinfo == '' || $catinfo['format'] == 'default' ) { $format = $tcginfo['format']; }
+						else { $format = $catinfo['format']; }
+						
+						$givinglinks .= "\n".$tcginfo['cardsurl'].''.$card.'.'.$format."";
+						
+					}
+					
+					$i++;
+				}
 			}
 					
 			$giving = implode(', ',$giving);
@@ -277,12 +299,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 				$success[] = "Trade log updated.";
 				
 				if ( $emailcards == 1 ) {
-					$giving = explode(', ',$giving);
-					foreach ( $giving as $card ) {
-						$givinglinks .= "\n".$tcginfo['cardsurl'].''.$card.'.'.$tcginfo['format']."";
-					}
-					$giving = implode(', ',$giving);
-					
+
 					$username = $database->get_assoc("SELECT `value` FROM `settings` WHERE `setting` = 'username'");
 					$username = $username['value'];
 					$useremail = $database->get_assoc("SELECT `value` FROM `settings` WHERE `setting` = 'email'");

@@ -1,17 +1,6 @@
-<?php
+<?php if ( ! defined('VALID_INC') ) exit('No direct script access allowed');
 
-//****************** EASYTCG FM FUNCTION LIBRARY ******************//
-
-// CHANGE SETTINGS BELOW TO MATCH YOUR EASYTCG FM DATABASE SETTINGS
-class Config {
-
-	const DB_SERVER = 'localhost', // In most cases, you can leave this as 'localhost'. If you're unsure, check with your host.
-		  DB_USER = 'dbuser', // Database user
-		  DB_PASSWORD = 'dbpassword', // Database user password
-		  DB_DATABASE = 'dbdatabase'; // Database name
-
-}
-// DO NOT EDIT PAST THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
+require_once('etcg/config.php');
 
 class Sanitize {
 	
@@ -165,7 +154,8 @@ function show_cards( $tcg, $category, $unique = 0 ) {
 	$cardsurl = $tcginfo['cardsurl'];
 	$format = $tcginfo['format'];
 	
-	$cards = $database->get_assoc("SELECT `cards` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='$category' LIMIT 1");
+	$cards = $database->get_assoc("SELECT `cards`, `format` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='$category' LIMIT 1");
+	if ( $cards['format'] != 'default' ) { $format = $cards['format']; }
 	
 	if ( $cards['cards'] === '' ) { echo '<p><em>There are currently no cards under this category.</em></p>'; }
 	else {
@@ -197,7 +187,8 @@ function show_doubles( $tcg, $category ) {
 	$cardsurl = $tcginfo['cardsurl'];
 	$format = $tcginfo['format'];
 	
-	$cards = $database->get_assoc("SELECT `cards` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='$category' LIMIT 1");
+	$cards = $database->get_assoc("SELECT `cards`, `format` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='$category' LIMIT 1");
+	if ( $cards['format'] != 'default' ) { $format = $cards['format']; }
 	
 	if ( $cards['cards'] === '' ) { echo '<p><em>There are currently no cards under this category.</em></p>'; }
 	else {
@@ -246,14 +237,14 @@ function show_collecting($tcg, $worth = '', $deckname = '') {
 	else if ( $deckname !== '' ) { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '0' AND `deck` = '$deckname' ORDER BY `sort`, `worth`"); }
 	else { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '0' ORDER BY `sort`, `worth`, `deck`"); }
 	while ( $row = mysql_fetch_assoc($result) ) { 
-		$cards = explode(',',$row['cards']); 
+		$cards = explode(',',$row['cards']);
+		if ( $row['format'] != 'default' ) { $format = $row['format']; }
 			
 		array_walk($cards, 'trim_value');
 		
 		if ( $row['cards'] == '' ) { $count = 0; } else { $count = count($cards); }
 		?>
-    	
-        <br />
+
 		<h2><?php echo $row['deck']; ?> (<?php echo $count; ?>/<?php echo $row['count']; ?>)</h2>
         <p align="center">
         	<?php
@@ -265,9 +256,9 @@ function show_collecting($tcg, $worth = '', $deckname = '') {
 					
 					$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$tcgid' AND `receiving` LIKE '%$card%'");
 					
-					if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$tcginfo['format'].'" alt="" title="'.$card.'" />';
-					else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$row['pending'].'.'.$tcginfo['format'].'" alt="" title="'.$card.'" />'; }
-					else { echo '<img src="'.$tcginfo['cardsurl'].''.$row['filler'].'.'.$tcginfo['format'].'" alt="" />'; }
+					if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$format.'" alt="" title="'.$card.'" />';
+					else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$row['pending'].'.'.$format.'" alt="" title="'.$card.'" />'; }
+					else { echo '<img src="'.$tcginfo['cardsurl'].''.$row['filler'].'.'.$format.'" alt="" />'; }
 					
 					if ( $row['puzzle'] == 0 ) { echo ' '; }
 					if ( $row['break'] !== '0' && $i % $row['break'] == 0 ) { echo '<br />'; }
@@ -319,11 +310,63 @@ function show_pending($tcg) {
 	$cardsurl = $tcginfo['cardsurl'];
 	$format = $tcginfo['format'];
 	
+	
 	$result = $database->query("SELECT * FROM `trades` WHERE `tcg`='$tcgid' ORDER BY `date`,`trader`");
 	while ( $row = mysql_fetch_assoc($result) ) {
 		
+		$receiving = str_replace(';',',',$row['receiving']);
+		
+		echo '- <strong>'.$row['trader'].'</strong> (pending since <em>'.date('F d, Y', strtotime($row['date'])).'</em>) <br />';
+		if ( $receiving !== '' ) { echo ''.$receiving.' <br />'; }
+		
+		if ( $row['giving'] !== '' ) {
+			$cardgroups = explode(';',$row['giving']); 
+			$cardcats = explode(',',$row['givingcat']); 
+			array_walk($cardcats, 'trim_value');
+			
+			$i = 0;
+			foreach ( $cardgroups as $group ) {
+			
+				$group = explode(',',$group);
+				array_walk($group, 'trim_value');
+				if ( $cardcats[$i] === 'collecting' ) {
+					
+					foreach ( $group as $card ) {
+						$exists = $database->num_rows("SELECT `id` FROM `collecting` WHERE `tcg`='$tcgid' AND `mastered`='0' AND `deck` LIKE '%".substr($card, -2)."%' LIMIT 1");
+						if ( $exists > 0 ) {
+							$deckinfo = $database->get_assoc("SELECT `format` FROM `collecting` WHERE `tcg`='$tcgid' AND `mastered`='0' AND `deck` LIKE '%".substr($card, -2)."%' LIMIT 1");
+							if ( $deckinfo['format'] != 'default' ) { $format = $deckinfo['format']; }
+							
+							echo '<img src="'.$cardsurl.''.$card.'.'.$format.'" alt="" title="'.$card.'" /> ';
+						}
+						else {
+							echo '<img src="'.$cardsurl.''.$card.'.'.$format.'" alt="" title="'.$card.'" /> ';
+						}
+					}
+					
+				}
+				else {
+					foreach ( $group as $card ) {
+						$catinfo = $database->get_assoc("SELECT `format` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='".$cardcats[$i]."' LIMIT 1");
+						if ( $catinfo['format'] != 'default' ) { $format = $catinfo['format']; }
+						else { $format = $tcginfo['format']; }
+						
+						echo '<img src="'.$cardsurl.''.$card.'.'.$format.'" alt="" title="'.$card.'" /> ';
+					}
+				}
+				
+				$i++;
+			
+			}
+		}
+		
+		echo '<br /><br />';
+		
+		/**
+		
 		$giving = explode(',',str_replace(';',',',$row['giving']));
 		$receiving = str_replace(';',',',$row['receiving']);
+		
 		
 		echo '- <strong>'.$row['trader'].'</strong> (pending since <em>'.date('F d, Y', strtotime($row['date'])).'</em>) <br />';
 		if ( $receiving !== '' ) { echo ''.$receiving.' <br />'; }
@@ -336,6 +379,8 @@ function show_pending($tcg) {
 		}
 		
 		echo '<br /><br />';
+		
+		**/
 	
 	}
 
@@ -395,7 +440,7 @@ function cardcount ($tcg,$type = '',$cat = '') {
 	$result = $database->query("SELECT `giving`,`givingcat` FROM `trades` WHERE `tcg`='$tcgid'");
 	while ( $row = mysql_fetch_assoc($result) ) {
 		
-		if ( $row['giving'] !== '' ) { 
+		if ( $row['giving'] !== '' ) {
 			$cardgroups = explode(';',$row['giving']); 
 			$cardcats = explode(',',$row['givingcat']); 
 			array_walk($cardcats, 'trim_value');

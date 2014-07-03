@@ -62,7 +62,7 @@
 				if ( !$result ) { $error[] = "Could not truncate the log. ".mysql_error().""; }
 				else {
 					$curarch = $database->get_assoc("SELECT `".$logtype."logarch` FROM `tcgs` WHERE `id`='$id' LIMIT 1");
-					$curarch = $curarch["$logtypelogarch"];
+					$curarch = $curarch["$logtype"."logarch"];
 					$newlog = "$log\n\n$curarch";
 					
 					$result = $database->query("UPDATE `tcgs` SET `".$logtype."logarch`='$newlog' WHERE `id`='$id'");

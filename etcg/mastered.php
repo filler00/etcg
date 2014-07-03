@@ -8,6 +8,7 @@
 	
 	$id = intval($_GET['id']);
 	$database = new Database;
+	$upload = new Upload;
 
 	$tcginfo = $database->get_assoc("SELECT * FROM `tcgs` WHERE `id`='$id' LIMIT 1");
 	$altname = strtolower(str_replace(' ','',$tcginfo['name']));
@@ -27,6 +28,8 @@
 		$mastereddate = $sanitize->for_db($_POST['mastereddate']);
 		$auto = intval($_POST['auto']);
 		$autourl = $sanitize->for_db($_POST['autourl']);
+		$format = $sanitize->for_db($_POST['format']);
+		if ( $format == '' ) { $format = 'default'; }
 		if ( $autourl == '' ) { $autourl = 'default'; }
 		if ( $autourl != 'default' && substr($autourl, -1) != '/' ) { $autourl = "$autourl/"; }
 		
@@ -40,8 +43,8 @@
 		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'Invalid auto upload URL.'; }
 		else {
 			
-			$deck = $database->get_assoc("SELECT `deck` FROM `collecting` WHERE `id`='$catid'");
-			$deck = $deck['deck'];
+			$deckinfo = $database->get_assoc("SELECT * FROM `collecting` WHERE `id`='$catid'");
+			$deck = $deckinfo['deck'];
 			
 			$cards = explode(',',$cards);
 			
@@ -54,29 +57,23 @@
 			if ( $tcginfo['autoupload'] == 1 && $auto == 1 ) {
 				foreach ( $cards as $card ) {
 					if ( !isset($error) ) {
-						$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
-					
-						if ( !file_exists($filename) ) {
-							
-							if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-							else { $defaultauto = $autourl; }
-							$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-							
-							if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-							else {
-								if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename"; }	
-								else { $success2 = " and all missing cards have been uploaded"; }
-							}
-							
-						}
-					
+						if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+						else { $defaultauto = $autourl; }
+						
+						if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+						else { $formatval = $format; }
+
+						$upsuccess = $upload->card($tcginfo,$deckinfo,'collecting',$card);
+									
+						if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+						else if ( $upsuccess === true ) { $success2 = " and all missing cards have been uploaded"; }
 					}
 				}
 			}
 			
 			$cards = implode(', ',$cards);
 			
-			$result = $database->query("UPDATE `collecting` SET `cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `mastereddate`='$mastereddate' WHERE `id`='$catid' LIMIT 1");
+			$result = $database->query("UPDATE `collecting` SET `cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `format`='$format', `mastereddate`='$mastereddate' WHERE `id`='$catid' LIMIT 1");
 			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysql_error().""; }
 			else { $success[] = "The deck has been updated$success2!"; }
 			
@@ -99,6 +96,8 @@
 		$puzzle = intval($_POST['puzzle']);
 		$auto = intval($_POST['auto']);
 		$autourl = $sanitize->for_db($_POST['autourl']);
+		$format = $sanitize->for_db($_POST['format']);
+		if ( $format == '' ) { $format = 'default'; }
 		if ( $autourl == '' ) { $autourl = 'default'; }
 		if ( $autourl != 'default' && substr($autourl, -1) != '/' ) { $autourl = "$autourl/"; }
 		if ( $cards == 'cards (01, 02, 03)' ) { $cards = ''; }
@@ -128,21 +127,17 @@
 				if ( $tcginfo['autoupload'] == 1 && $auto == 1 ) {
 					foreach ( $cards as $card ) {
 						if ( !isset($error) ) {
-							$filename = ''.$tcginfo['cardspath'].''.$card.'.'.$tcginfo['format'].'';
-						
-							if ( !file_exists($filename) ) {
 								
-								if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
-								else { $defaultauto = $autourl; }
-								$imgurl = ''.$defaultauto.''.$card.'.'.$tcginfo['format'].'';
-								
-								if ( !$img = file_get_contents($imgurl) ) { $error[] = "Couldn't find the file named $card.$format at $defaultauto"; }
-								else {
-									if ( !file_put_contents($filename,$img) ) { $error[] = "Failed to upload $filename"; }	
-									else { $success2 = " and all missing cards have been uploaded"; }
-								}
-								
-							}
+							if ( $autourl == 'default' ) { $defaultauto = $tcginfo['defaultauto']; }
+							else { $defaultauto = $autourl; }
+							
+							if ( $format == 'default' ) { $formatval = $tcginfo['format']; }
+							else { $formatval = $format; }
+							
+							$upsuccess = $upload->card($tcginfo,'','collecting',$card,$defaultauto,$formatval);
+									
+							if ( $upsuccess === false ) { $error[] = "Failed to upload $card.$formatval from $defaultauto"; }
+							else if ( $upsuccess === true ) { $success2 = " and all missing cards have been uploaded"; }
 						
 						}
 					}
@@ -191,7 +186,7 @@
 			
 			if ( !isset($error) ) {
 				$today = date("Y-m-d");
-				$result = $database->query("INSERT INTO `collecting` (`tcg`,`deck`,`cards`,`worth`,`count`,`break`,`filler`,`pending`,`puzzle`,`auto`,`uploadurl`,`mastered`,`mastereddate`) VALUE ('$id','$deck','$cards','$worth','$count','$break','$filler','$pending','$puzzle','$auto','$autourl','1','$today')");
+				$result = $database->query("INSERT INTO `collecting` (`tcg`,`deck`,`cards`,`worth`,`count`,`break`,`filler`,`pending`,`puzzle`,`auto`,`uploadurl`,`format`,`mastered`,`mastereddate`) VALUE ('$id','$deck','$cards','$worth','$count','$break','$filler','$pending','$puzzle','$auto','$autourl','$format','1','$today')");
 				if ( !$result ) { $error[] = "Failed to add the deck."; }
 				else { $success[] = "The new mastered deck has been added$success2."; }
 			}
@@ -267,8 +262,9 @@
         <td colspan="2">grab from categories: <input name="findcards" type="checkbox" value="1" id="findcards"></td>
       </tr>
       <tr>
-        <td colspan="3">auto url: <input name="autourl" type="text" value="default" id="autourl" /></td>
-        <td colspan="3">auto: <input name="auto" type="checkbox" value="1" id="auto" /></td>
+        <td colspan="2">format: <input name="format" type="text" value="default" id="format" /></td>
+		<td colspan="3">auto url: <input name="autourl" type="text" value="default" id="autourl" /></td>
+        <td colspan="1">auto: <input name="auto" type="checkbox" value="1" id="auto" /></td>
       </tr>
       <tr>
         <td colspan="6" align="right"><input name="newcat" type="submit" value="Submit" id="newcat"></td>
@@ -311,11 +307,13 @@
 					if ( $number < 10 ) { $number = "0$number"; }
 					$card = "".$deckinfo['deck']."$number";
 					
+					if ( $deckinfo['format'] !== 'default' ) { $format = $deckinfo['format']; } else { $format = $tcginfo['format']; }
+					
 					$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$id' AND `receiving` LIKE '%$card%'");
 					
-					if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$tcginfo['format'].'" alt="" />';
-					else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$deckinfo['pending'].'.'.$tcginfo['format'].'" alt="" />'; }
-					else { echo '<img src="'.$tcginfo['cardsurl'].''.$deckinfo['filler'].'.'.$tcginfo['format'].'" alt="" />'; }
+					if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$format.'" alt="" />';
+					else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$deckinfo['pending'].'.'.$format.'" alt="" />'; }
+					else { echo '<img src="'.$tcginfo['cardsurl'].''.$deckinfo['filler'].'.'.$format.'" alt="" />'; }
 					
 					if ( $deckinfo['puzzle'] == 0 ) { echo ' '; }
 					if ( $deckinfo['break'] !== '0' && $i % $deckinfo['break'] == 0 ) { echo '<br />'; }
@@ -360,7 +358,7 @@
                	  <td colspan="2">auto url: <input name="" type="text" value="<?php echo $deckinfo['uploadurl']; ?>" /></td>
                 <td>auto: <input name="auto" type="checkbox" id="auto" value="1" <?php if ( $deckinfo['auto'] == 1 ) { echo 'checked="checked"'; } ?> /></td>
               </tr><tr>
-                  <td colspan="3" align="right">mastered: <input name="mastereddate" type="text" id="mastereddate" value="<?php echo $deckinfo['mastereddate']; ?>" size="10"> <input name="update" type="submit" value="Update" id="update" /></td>
+                  <td colspan="3" align="right">format: <input name="format" type="text" id="format" value="<?php echo $deckinfo['format']; ?>" size="8" /> mastered: <input name="mastereddate" type="text" id="mastereddate" value="<?php echo $deckinfo['mastereddate']; ?>" size="10"> <input name="update" type="submit" value="Update" id="update" /></td>
               </tr>
     </table>
   </form>
