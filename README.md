@@ -10,7 +10,7 @@ EasyTCG FM is open-sourced software licensed under the [MIT license](http://open
 3.	One MySQL Database.
 4.	JavaScript enabled.
 
-**Because the script utilizes the `filter_var()` PHP function to validate emails and URLs, this script is compatible only with 5.2 and up. If you still want to use the script and you have some PHP know-how, you can go through the files and replace all occurances of filter_var() with a preg_match() equivalent, or remove it altogether at your own risk.*
+*Because the script utilizes the `filter_var()` PHP function to validate emails and URLs, this script is compatible only with 5.2 and up. If you still want to use the script and you have some PHP know-how, you can go through the files and replace all occurances of filter_var() with a preg_match() equivalent, or remove it altogether at your own risk.*
 
 *There are also known bugs for the `filter_var()` function in PHP 5.2.13. If you have this version of PHP, you also will need to apply the modification mentioned above, or attempt to upgrade your PHP installation to a more recent version.*
 
@@ -65,10 +65,10 @@ Settings and additional fields for individual TCGs can be managed here. The deta
 - **Remove This TCG**: Does just what its name suggests. This will completely remove the TCG and all related data items from the database.
 
 ###CARD CATEGORIES
-####Priorities:
-- **LOW PRIORITY**: The default priority value. Intended for cards that you are willing to trade away unconditionally. Cards is this category will be searched first whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category will also be searched LAST when using the "grab" feature to move cards to a new collecting deck.
-- **MEDIUM PRIORITY**: Intended for cards that you value more than Low priority cards, but are still willing to trade away (keeping or future decks). Cards in this category will be searched second (after low priority categories) whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched second (after high priority cards) when using the "grab" feature to move cards to a new collecting deck.
-- **HIGH PRIORTITY**: Intended for cards that you will probably (if not definately) be collecting, and that you will not even consider trading away. Cards in this category will NOT be searched whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched FIRST when using the "grab" feature to move cards to a new collecting deck.
+- **Priorities**:
+	- **LOW PRIORITY**: The default priority value. Intended for cards that you are willing to trade away unconditionally. Cards is this category will be searched first whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category will also be searched LAST when using the "grab" feature to move cards to a new collecting deck.
+	- **MEDIUM PRIORITY**: Intended for cards that you value more than Low priority cards, but are still willing to trade away (keeping or future decks). Cards in this category will be searched second (after low priority categories) whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched second (after high priority cards) when using the "grab" feature to move cards to a new collecting deck.
+	- **HIGH PRIORTITY**: Intended for cards that you will probably (if not definately) be collecting, and that you will not even consider trading away. Cards in this category will NOT be searched whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched FIRST when using the "grab" feature to move cards to a new collecting deck.
 
 - **New Category**: Fill this out to add a new card category. The checkbox is for the AUTO feature. Select it if you want cards that are added to this category to be uploaded automatically (should the feature be turned on in the TCG's settings).
 I suggest setting up and organizing your categories by worth and priority. For example, I might make a category with the name "regkeeping" for cards that are worth 1 and of a medium priority. Then another called "speckeeping" (for cards worth 2, medium priority), "regtrading" (for cards worth 1, low priority), and "spectrading" (for cards worth 2, low priority).
