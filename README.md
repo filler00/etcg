@@ -153,7 +153,7 @@ The code snippets that you will be using to display your cards, logs, and other 
 Include `func.php`:
 
 ```php
-<?php define('VALID_INC', TRUE); include 'func.php'; ?>
+<?php define('VALID_INC', TRUE); include_once 'func.php'; ?>
 ```
 
 
