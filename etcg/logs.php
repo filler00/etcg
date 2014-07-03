@@ -5,10 +5,10 @@
 <?php
 	$database = new Database;
 	$result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
-	$count = mysql_num_rows($result);
+	$count = mysqli_num_rows($result);
 	
 	if ( $count > 0 ) {
-		while ( $row = mysql_fetch_assoc($result) ) {
+		while ( $row = mysqli_fetch_assoc($result) ) {
 			echo '&raquo; <a href="logs.php?id='.$row['id'].'">'.$row['name'].'</a><br />';
 		}
 	}
@@ -42,7 +42,7 @@
 				if ( $logtype == 'activityarch' ) { $result = $database->query("UPDATE `tcgs` SET `activitylogarch`='$log' WHERE `id`='$id'"); }
 				if ( $logtype == 'tradearch' ) { $result = $database->query("UPDATE `tcgs` SET `tradelogarch`='$log' WHERE `id`='$id'"); }
 				
-				if ( !$result ) { $error[] = "Could not update the log. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "Could not update the log. ".mysqli_error().""; }
 				else { $success[] = "The log has been updated successfully."; }
 			
 			}
@@ -59,14 +59,14 @@
 			if ( $logtype == 'activity' || $logtype == 'trade' ) {
 				
 				$result = $database->query("UPDATE `tcgs` SET `".$logtype."log`='' WHERE `id`='$id'");
-				if ( !$result ) { $error[] = "Could not truncate the log. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "Could not truncate the log. ".mysqli_error().""; }
 				else {
 					$curarch = $database->get_assoc("SELECT `".$logtype."logarch` FROM `tcgs` WHERE `id`='$id' LIMIT 1");
 					$curarch = $curarch["$logtype"."logarch"];
 					$newlog = "$log\n\n$curarch";
 					
 					$result = $database->query("UPDATE `tcgs` SET `".$logtype."logarch`='$newlog' WHERE `id`='$id'");
-					if ( !$result ) { $error[] = "Could not update the log archives. ".mysql_error().""; }
+					if ( !$result ) { $error[] = "Could not update the log archives. ".mysqli_error().""; }
 					else { $success[] = "The log has been updated successfully."; }
 					
 				}

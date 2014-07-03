@@ -35,7 +35,7 @@
 				unset($cardfound);
 					
 				$result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$tcg' AND `priority`!='3' ORDER BY `priority`");
-				while ( $row = mysql_fetch_array($result) ) {
+				while ( $row = mysqli_fetch_array($result) ) {
 					
 					if ( !isset($cardfound) || $cardfound != true ) {
 						
@@ -84,7 +84,7 @@
 				
 				$result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$tcg' AND `priority`!='3' ORDER BY `priority`");
 				$x = 0;
-				while ( $row = mysql_fetch_array($result) ) {
+				while ( $row = mysqli_fetch_array($result) ) {
 					
 					if ( !isset($cardfound) || $cardfound != true ) {
 						
@@ -125,7 +125,7 @@
 			
 			$today = date("Y-m-d");
 			$result = $database->query("INSERT INTO `trades` (`tcg`,`trader`,`email`,`giving`,`givingcat`,`receiving`,`receivingcat`,`type`,`date`) VALUE ('$tcg','$name','$email','$giving','$givingcats','$offer','','incoming','$today')");
-			if ( !result ) { $error[] = "Could not add the new trade. ".mysql_error().""; }
+			if ( !result ) { $error[] = "Could not add the new trade. ".mysqli_error().""; }
 			
 			$youremail = $database->get_assoc("SELECT `value` FROM `settings` WHERE `setting` = 'email'");
 			$youremail = $youremail['value'];

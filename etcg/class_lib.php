@@ -1,4 +1,4 @@
-<?php  if ( ! defined('VALID_INC') ) exit('No direct script access allowed');
+<?php if ( ! defined('VALID_INC') ) exit('No direct script access allowed');
 
 require_once('config.php');
 
@@ -16,9 +16,12 @@ class Sanitize {
 	
 	function for_db ($data) {
 		
+		$database = new Database;
+		$link = $database->connect();
+		
 		$data = $this->clean($data);
 		
-		$data = mysql_real_escape_string($data);
+		$data = mysqli_real_escape_string($link, $data);
 		
 		return $data;
 			
@@ -30,23 +33,18 @@ class Database {
 	
 	function connect () {
 	
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = @mysqli_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD, Config::DB_DATABASE )
+		or die( "Couldn't connect to MYSQL: ".mysqli_error() );
 		
-		return true;
+		return $link;
 		
 	}
 	
 	function query ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
 		return $result;
 		
@@ -54,16 +52,13 @@ class Database {
 	
 	function get_assoc ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$assoc = mysql_fetch_assoc($result);
+		$assoc = mysqli_fetch_assoc($result);
 		
 		return $assoc;
 		
@@ -71,16 +66,13 @@ class Database {
 	
 	function get_array ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$array = mysql_fetch_array($result);
+		$array = mysqli_fetch_array($result);
 		
 		return $array;
 		
@@ -88,16 +80,13 @@ class Database {
 	
 	function num_rows ($query) {
 	
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$num_rows = mysql_num_rows($result);
+		$num_rows = mysqli_num_rows($result);
 		
 		return $num_rows;
 	

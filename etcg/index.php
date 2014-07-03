@@ -45,11 +45,11 @@
     <?php
         $database = new Database;
         $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
-        $count = mysql_num_rows($result);
+        $count = mysqli_num_rows($result);
 		
 		if ( $count > 0 ) {
 			$i = 0;
-			while ( $row = mysql_fetch_assoc($result) ) {
+			while ( $row = mysqli_fetch_assoc($result) ) {
 				$i++;
 				if ( $i % 2 == 0 ) { $class = 'xlight'; } else { $class = 'light'; }
 				$tradecountt = $database->num_rows("SELECT `id` FROM `trades` WHERE `tcg`='".$row['id']."'");

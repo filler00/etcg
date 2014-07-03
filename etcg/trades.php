@@ -41,7 +41,7 @@ if ( isset($_POST['remove']) ) {
 				$catcards = implode(', ',$catcards);
 				
 				$result = $database->query("UPDATE `cards` SET `cards`='$catcards' WHERE `tcg`='$tcgid' AND `category`='".$givingcat[$i]."'");
-				if ( !$result ) { $error[] = "Could not replace cards ($cardgroup) in category '".$givingcat[$i]."'. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "Could not replace cards ($cardgroup) in category '".$givingcat[$i]."'. ".mysqli_error().""; }
 				else { $success[] = "Replaced $cardgroup in category ".$givingcat[$i]."."; }
 				
 				$i++;
@@ -50,7 +50,7 @@ if ( isset($_POST['remove']) ) {
 		}
 		
 		$result = $database->query("DELETE FROM `trades` WHERE `id` = '$tradeid' LIMIT 1");
-		if ( !$result ) { $error[] = "Could not remove the trade entry from the database. ".mysql_error().""; }
+		if ( !$result ) { $error[] = "Could not remove the trade entry from the database. ".mysqli_error().""; }
 		else { $success[] = "The trade has been removed."; }
 			
 	}			
@@ -229,7 +229,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 						$catcards = implode(', ',$catcards);
 						
 						$result = $database->query("UPDATE `cards` SET `cards`='$catcards' WHERE `tcg`='$tcgid' AND `category`='".$receivingcat[$i]."'");
-						if ( !$result ) { $error[] = "Could not add cards in category '".$receivingcat[$i]."'. ".mysql_error().""; }
+						if ( !$result ) { $error[] = "Could not add cards in category '".$receivingcat[$i]."'. ".mysqli_error().""; }
 					
 					}
 					
@@ -287,13 +287,13 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 			$date = date("$dateformat");
 			$logdate = str_replace('[DATE]',$date,$dateheaderformat);
 			
-			$oldlog = mysql_real_escape_string($tcginfo['tradelog']);
+			$oldlog = mysqli_real_escape_string($tcginfo['tradelog']);
 				
 			if ( strpos($oldlog,$logdate) !== false ) { $tradelog = str_replace($logdate,"$logdate\n$log",$oldlog); }
 			else { $tradelog = "$logdate\n$log\n\n".$oldlog.""; }
 			
 			$result = $database->query("UPDATE `tcgs` SET `tradelog`='$tradelog', `lastupdated`='$today' WHERE `id`='$tcgid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update the trade log. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "Failed to update the trade log. ".mysqli_error().""; }
 			else {
 				
 				$success[] = "Trade log updated.";
@@ -318,7 +318,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 				if ( !isset($error) ) { 
 					
 					$result = $database->query("DELETE FROM `trades` WHERE `id` = '$tradeid' LIMIT 1");
-					if ( !$result ) { $error[] = "Could not remove the trade from the database. ".mysql_error().""; }
+					if ( !$result ) { $error[] = "Could not remove the trade from the database. ".mysqli_error().""; }
 					else { $success[] = "The trade has been completed and removed."; }
 				
 				}
@@ -335,7 +335,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 			$receivingcat = implode(', ',$receivingcat);
 
 			$result = $database->query("UPDATE `trades` SET `giving`='$giving', `givingcat`='$givingcat', `receiving`='$receiving', `receivingcat`='$receivingcat', `emailcards`='$emailcards' WHERE `id`='$tradeid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update trade settings. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "Failed to update trade settings. ".mysqli_error().""; }
 			else { $success[] = "The trade has been updated."; }
 			
 		}
@@ -375,12 +375,12 @@ var menuOptions = new Array();
 
 <?php if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`='".intval($_GET['id'])."'") != 0 ) { $result = $database->query("SELECT * FROM `tcgs` WHERE `id`='".intval($_GET['id'])."'"); }
 else { $result = $database->query("SELECT * FROM `tcgs` WHERE `status` = 'active' ORDER BY `id`"); }
-while ( $tcginfo = mysql_fetch_assoc($result) ) {
+while ( $tcginfo = mysqli_fetch_assoc($result) ) {
 	
 	unset($categories);
 	$cats = $database->query("SELECT `category` FROM `cards` WHERE `tcg`='".$tcginfo['id']."'"); 
 	$i = 0;
-	while ( $row = mysql_fetch_assoc($cats) ) {
+	while ( $row = mysqli_fetch_assoc($cats) ) {
 		$categories[] = $row['category'];
 		$i++;
 	}
@@ -406,7 +406,7 @@ while ( $tcginfo = mysql_fetch_assoc($result) ) {
 			echo '<div id="'.$tcginfo['id'].''.$tcateg.'" '.$displayNone.'>';
 			
 			$resultt = $database->query("SELECT * FROM `trades` WHERE `tcg`='".$tcginfo['id']."' AND `type` = '".$tcateg."' ORDER BY `date` DESC");
-			while ( $row = mysql_fetch_assoc($resultt) ) { ?>
+			while ( $row = mysqli_fetch_assoc($resultt) ) { ?>
 				
 				<?php // Build menu options for new category select
 							$menuoptions = "";

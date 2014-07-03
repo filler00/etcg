@@ -80,7 +80,7 @@
 			}
 			
 			$result = $database->query("UPDATE `collecting` SET `sort`='$sort',`cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `format`='$format' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysqli_error().""; }
 			else { $success[] = "The deck has been updated$success2!"; }
 			
 		}
@@ -157,7 +157,7 @@
 				
 				$result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$id' ORDER BY `priority` DESC");
 				
-				while ( $row = mysql_fetch_array($result) ) {
+				while ( $row = mysqli_fetch_array($result) ) {
 					
 					if ( !isset($error) ) {
 						
@@ -208,7 +208,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `collecting` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysqli_error().""; }
 			else { $success[] = "The collecting deck and containing cards have been removed."; }
 		
 		}
@@ -267,7 +267,7 @@
     
     <?php
 	$result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$id' AND `mastered` = '0' ORDER BY `sort`, `worth`, `deck`");
-	while ( $row = mysql_fetch_assoc($result) ) { 
+	while ( $row = mysqli_fetch_assoc($result) ) { 
 	
 		$cards = explode(',',$row['cards']); 
 			

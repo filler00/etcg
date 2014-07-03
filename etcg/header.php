@@ -39,7 +39,7 @@ if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`=
 					<?php
 		        	$result = $database->query("SELECT * FROM `tcgs` WHERE `status` = 'active' ORDER BY `name`");
 					
-					while ( $row = mysql_fetch_assoc($result) ) {
+					while ( $row = mysqli_fetch_assoc($result) ) {
 					?>
 					<option value="cards.php?id=<?php echo $row['id'] ?>" <?php if ( $_SESSION['currTCG'] == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
 					<?php } ?>
@@ -48,7 +48,7 @@ if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`=
 					<?php
 		        	$result = $database->query("SELECT * FROM `tcgs` WHERE `status` = 'hiatus' ORDER BY `name`");
 					
-					while ( $row = mysql_fetch_assoc($result) ) {
+					while ( $row = mysqli_fetch_assoc($result) ) {
 					?>
 					<option value="cards.php?id=<?php echo $row['id'] ?>" <?php if ( $_SESSION['currTCG'] == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
 					<?php } ?>
@@ -57,7 +57,7 @@ if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`=
 					<?php
 		        	$result = $database->query("SELECT * FROM `tcgs` WHERE `status` = 'inactive' ORDER BY `name`");
 					
-					while ( $row = mysql_fetch_assoc($result) ) {
+					while ( $row = mysqli_fetch_assoc($result) ) {
 					?>
 					<option value="cards.php?id=<?php echo $row['id'] ?>" <?php if ( $_SESSION['currTCG'] == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
 					<?php } ?>

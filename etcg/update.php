@@ -6,10 +6,10 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 	
 	$database = new Database;
 	$result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
-	$count = mysql_num_rows($result);
+	$count = mysqli_num_rows($result);
 	
 	if ( $count > 0 ) {
-		while ( $row = mysql_fetch_assoc($result) ) {
+		while ( $row = mysqli_fetch_assoc($result) ) {
 			echo '&raquo; <a href="update.php?id='.$row['id'].'">'.$row['name'].'</a><br />';
 		}
 	}
@@ -48,7 +48,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 			array_walk($cardscat,'sanitize');
 			
 			$result = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id'");
-			while ( $row = mysql_fetch_assoc($result) ) {
+			while ( $row = mysqli_fetch_assoc($result) ) {
 				$varname = ''.$row['name'].'_add';
 				$$varname = $sanitize->for_db($_POST[$varname]);
 			}
@@ -56,7 +56,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 			// Update activity log first, if changed
 			if ( $tcginfo['activitylog'] != $activitylog ) {
 				$result = $database->query("UPDATE `tcgs` SET `activitylog`='$activitylog' WHERE `id`='$id' LIMIT 1");
-				if ( !$result ) { $error[] = "Could not update the activity log. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "Could not update the activity log. ".mysqli_error().""; }
 			}
 			
 			// Insert the new log entry, if supplied
@@ -74,13 +74,13 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 				
 				if ( $logtype == 'activity' ) { $logtype = 'activitylog'; } else { $logtype = 'tradelog'; }
 				
-				$oldlog = mysql_real_escape_string($tcginfo[$logtype]);
+				$oldlog = mysqli_real_escape_string($tcginfo[$logtype]);
 				
 				if ( strpos($oldlog,$logdate) !== false ) { $tradelog = str_replace($logdate,"$logdate\n$log",$oldlog); }
 				else { $tradelog = "$logdate\n$log\n\n".$oldlog.""; }
 				
 				$result = $database->query("UPDATE `tcgs` SET `$logtype`='$tradelog', `lastupdated`='$today' WHERE `id`='$id' LIMIT 1");
-				if ( !$result ) { $error[] = "Failed to insert new entry into the $logtype log. ".mysql_error().""; } else { $success[] = "Inserted new log entry."; }
+				if ( !$result ) { $error[] = "Failed to insert new entry into the $logtype log. ".mysqli_error().""; } else { $success[] = "Inserted new log entry."; }
 			}
 			
 			// Insert new cards, if any
@@ -174,7 +174,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 							$catcards = implode(', ',$catcards);
 							
 							$result = $database->query("UPDATE `cards` SET `cards`='$catcards' WHERE `tcg`='$id' AND `category`='".$cardscat[$i]."'");
-							if ( !$result ) { $error[] = "Could not add cards to category '".$cardscat[$i]."'. ".mysql_error().""; }
+							if ( !$result ) { $error[] = "Could not add cards to category '".$cardscat[$i]."'. ".mysqli_error().""; }
 						
 						}
 						
@@ -188,7 +188,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 			
 			// Update Additional Fields
 			$resultt = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1'");
-			while ( $row = mysql_fetch_assoc($resultt) ) {
+			while ( $row = mysqli_fetch_assoc($resultt) ) {
 				
 				if ( !isset($error) ) {
 					
@@ -197,7 +197,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 					
 					$fieldname = $row['name'];
 					$result = $database->query("UPDATE `additional` SET `value`='$addname' WHERE `tcg`='$id' AND `name`='$fieldname' LIMIT 1");
-					if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysql_error().""; }
+					if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysqli_error().""; }
 				
 				}
 				
@@ -211,7 +211,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 		
 		$categories[] = 'collecting';
 		$result = $database->query("SELECT `category` FROM `cards` WHERE `tcg`='$id'"); 
-		while ( $row = mysql_fetch_assoc($result) ) {
+		while ( $row = mysqli_fetch_assoc($result) ) {
 			$categories[] = $row['category'];
 		}
 		sort($categories);
@@ -278,7 +278,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
             <tr>
 				<td colspan="2" align="center" class="top">Additional Fields</td>
 			</tr>
-            <?php $result = $database->query("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`"); while ( $row = mysql_fetch_assoc($result) ) { ?>
+            <?php $result = $database->query("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`"); while ( $row = mysqli_fetch_assoc($result) ) { ?>
             <tr>
            	  <td><?php echo $row['name'] ?>: </td>
                 <td><input name="<?php echo $row['name'] ?>_add" type="text" id="kk" value="<?php echo $row['value']; ?>" size="45"></td>

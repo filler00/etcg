@@ -37,7 +37,7 @@ if ( isset($_POST['submit']) ) {
 		
 		$result = $database->query("INSERT INTO `tcgs` (`name`,`url`,`cardsurl`,`cardspath`,`defaultauto`,`autoupload`,`lastupdated`,`status`,`format`) VALUE ('$name','$url','$cardsurl','$cardspath','$defaultauto','$autoupload','$today','$status','$format')");
 		
-		if ( !$result ) { $error[] = "Error inserting row. ".mysql_error().""; }
+		if ( !$result ) { $error[] = "Error inserting row. ".mysqli_error().""; }
 		else {
 			
 			$tcginfo = $database->get_assoc("SELECT * FROM `tcgs` WHERE `name`='$name' LIMIT 1");
@@ -53,7 +53,7 @@ if ( isset($_POST['submit']) ) {
 						$numrows = $database->num_rows("SELECT * FROM `additional` WHERE `name`='$field' AND `tcg`='$tcgid'");
 						if ( $numrows == 0 ) {
 							$result = $database->query("INSERT INTO `additional` (`name`,`tcg`) VALUE ('$field','$tcgid')");
-							if ( !$result ) { $error[] = "Error inserting row. ".mysql_error().""; }
+							if ( !$result ) { $error[] = "Error inserting row. ".mysqli_error().""; }
 						}
 						else { $error[] = "Error adding additional fields. Fields can't share the same name."; }
 					}

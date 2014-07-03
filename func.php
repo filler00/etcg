@@ -16,11 +16,12 @@ class Sanitize {
 	
 	function for_db ($data) {
 		
-		Database::connect();
+		$database = new Database;
+		$link = $database->connect();
 		
 		$data = $this->clean($data);
 		
-		$data = mysql_real_escape_string($data);
+		$data = mysqli_real_escape_string($link, $data);
 		
 		return $data;
 			
@@ -32,23 +33,18 @@ class Database {
 	
 	function connect () {
 	
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = @mysqli_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD, Config::DB_DATABASE )
+		or die( "Couldn't connect to MYSQL: ".mysqli_error() );
 		
-		return true;
+		return $link;
 		
 	}
 	
 	function query ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
 		return $result;
 		
@@ -56,16 +52,13 @@ class Database {
 	
 	function get_assoc ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$assoc = mysql_fetch_assoc($result);
+		$assoc = mysqli_fetch_assoc($result);
 		
 		return $assoc;
 		
@@ -73,16 +66,13 @@ class Database {
 	
 	function get_array ($query) {
 		
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$array = mysql_fetch_array($result);
+		$array = mysqli_fetch_array($result);
 		
 		return $array;
 		
@@ -90,16 +80,13 @@ class Database {
 	
 	function num_rows ($query) {
 	
-		@mysql_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD )
-		or die( "Couldn't connect to MYSQL: ".mysql_error() );
-		@mysql_select_db( Config::DB_DATABASE )
-		or die ( "Couldn't open $db_datase: ".mysql_error() );
+		$link = $this->connect();
 		
-		$result = mysql_query($query);
+		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysql_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
 		
-		$num_rows = mysql_num_rows($result);
+		$num_rows = mysqli_num_rows($result);
 		
 		return $num_rows;
 	
@@ -236,7 +223,7 @@ function show_collecting($tcg, $worth = '', $deckname = '') {
 	if ( $worth !== '' ) { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '0' AND `worth` = '$worth' ORDER BY `sort`, `deck`"); }
 	else if ( $deckname !== '' ) { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '0' AND `deck` = '$deckname' ORDER BY `sort`, `worth`"); }
 	else { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '0' ORDER BY `sort`, `worth`, `deck`"); }
-	while ( $row = mysql_fetch_assoc($result) ) { 
+	while ( $row = mysqli_fetch_assoc($result) ) { 
 		$cards = explode(',',$row['cards']);
 		if ( $row['format'] != 'default' ) { $format = $row['format']; }
 			
@@ -290,7 +277,7 @@ function show_mastered($tcg, $worth = '', $deckname = '') {
 	if ( $worth !== '' ) { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '1' AND `worth` = '$worth' ORDER BY `mastereddate`"); }
 	else if ( $deckname !== '' ) { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '1' AND `deck` = '$deckname' ORDER BY `mastereddate`"); }
 	else { $result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$tcgid' AND `mastered` = '1' ORDER BY `mastereddate`"); }
-	while ( $row = mysql_fetch_assoc($result) ) { 
+	while ( $row = mysqli_fetch_assoc($result) ) { 
 		
 		$mastered = date('F d, Y', strtotime($row['mastereddate']));
 		if ( $row['badge'] !== '' ) { echo '<img src="'.$tcginfo['cardsurl'].''.$row['badge'].'" alt="" title="Mastered '.$mastered.'" /> '; }
@@ -312,7 +299,7 @@ function show_pending($tcg) {
 	
 	
 	$result = $database->query("SELECT * FROM `trades` WHERE `tcg`='$tcgid' ORDER BY `date`,`trader`");
-	while ( $row = mysql_fetch_assoc($result) ) {
+	while ( $row = mysqli_fetch_assoc($result) ) {
 		
 		$receiving = str_replace(';',',',$row['receiving']);
 		
@@ -397,7 +384,7 @@ function cardcount ($tcg,$type = '',$cat = '') {
 	
 	// Count categories
 	$result = $database->query("SELECT `category`,`cards`,`worth` FROM `cards` WHERE `tcg`='$tcgid'");
-	while ( $row = mysql_fetch_assoc($result) ) {
+	while ( $row = mysqli_fetch_assoc($result) ) {
 	
 		$categories[] = $row['category'];
 		
@@ -410,7 +397,7 @@ function cardcount ($tcg,$type = '',$cat = '') {
 	
 	// Count collecting
 	$result = $database->query("SELECT `cards`,`worth` FROM `collecting` WHERE `tcg`='$tcgid' AND `mastered`='0'");
-	while ( $row = mysql_fetch_assoc($result) ) {
+	while ( $row = mysqli_fetch_assoc($result) ) {
 		
 		if ( $row['cards'] !== '' ) { 
 			$cards = explode(',',$row['cards']); 
@@ -424,7 +411,7 @@ function cardcount ($tcg,$type = '',$cat = '') {
 	
 	// Count mastered
 	$result = $database->query("SELECT `cards`,`worth` FROM `collecting` WHERE `tcg`='$tcgid' AND `mastered`='1'");
-	while ( $row = mysql_fetch_assoc($result) ) {
+	while ( $row = mysqli_fetch_assoc($result) ) {
 		
 		if ( $row['cards'] !== '' ) { 
 			$cards = explode(',',$row['cards']); 
@@ -438,7 +425,7 @@ function cardcount ($tcg,$type = '',$cat = '') {
 	
 	// Count pending
 	$result = $database->query("SELECT `giving`,`givingcat` FROM `trades` WHERE `tcg`='$tcgid'");
-	while ( $row = mysql_fetch_assoc($result) ) {
+	while ( $row = mysqli_fetch_assoc($result) ) {
 		
 		if ( $row['giving'] !== '' ) {
 			$cardgroups = explode(';',$row['giving']); 
@@ -479,4 +466,5 @@ function cardcount ($tcg,$type = '',$cat = '') {
 
 }
 
+include_once('mods.php');
 ?>

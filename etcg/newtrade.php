@@ -34,7 +34,7 @@ if ( isset($_POST['newtrade']) ) {
 				
 				$result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$tcgid' AND `priority`!='3' ORDER BY `priority`");
 				$x = 0;
-				while ( $row = mysql_fetch_array($result) ) {
+				while ( $row = mysqli_fetch_array($result) ) {
 					
 					if ( !isset($cardfound) || $cardfound != true ) {
 						
@@ -87,7 +87,7 @@ if ( isset($_POST['newtrade']) ) {
 		
 		$today = date("Y-m-d");
 		$result = $database->query("INSERT INTO `trades` (`tcg`,`trader`,`email`,`giving`,`givingcat`,`receiving`,`receivingcat`,`type`,`date`) VALUE ('$tcgid','$trader','$email','$giving','$givingcats','$receiving','','$type','$today')");
-		if ( !result ) { $error[] = "Could not add the new trade. ".mysql_error().""; }
+		if ( !result ) { $error[] = "Could not add the new trade. ".mysqli_error().""; }
 		else { $success[]= "The trade has been added."; }
 		
 	}
@@ -110,7 +110,7 @@ if ( isset($_POST['newtrade']) ) {
         <td>
             <select name="tcg" id="tcg">
             	<?php $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
-				while ( $row = mysql_fetch_assoc($result) ) { ?>
+				while ( $row = mysqli_fetch_assoc($result) ) { ?>
                 <option value="<?php echo $row['id']; ?>" <?php if ( isset($_GET['id']) && intval($_GET['id']) == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
                 <?php } ?>
             </select>

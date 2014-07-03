@@ -42,7 +42,7 @@
 			$exists2 = $database->num_rows("SELECT * FROM `additional` WHERE `tcg`='$id' AND `name`='$newfield'");
 			
 			$result = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id'");
-			while ( $row = mysql_fetch_assoc($result) ) {
+			while ( $row = mysqli_fetch_assoc($result) ) {
 				$varname = ''.$row['name'].'_add';
 				$$varname = $sanitize->for_db($_POST[$varname]);
 				
@@ -71,11 +71,11 @@
 				if ( !isset($error) || $error == '' ) {
 					
 					$result = $database->query("UPDATE `tcgs` SET `name`='$name',`url`='$url',`cardsurl`='$cardsurl',`cardspath`='$cardspath',`defaultauto`='$defaultauto',`autoupload`='$autoupload',`status`='$status',`format`='$format',`lastupdated`='$lastupdated' WHERE `id`='$id'");
-					if ( !$result ) { $error[] = 'Failed to update the table. '.mysql_error().''; }
+					if ( !$result ) { $error[] = 'Failed to update the table. '.mysqli_error().''; }
 					else {
 					
 						$resultt = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id'");
-						while ( $row = mysql_fetch_array($resultt) ) {
+						while ( $row = mysqli_fetch_array($resultt) ) {
 							
 							if ( !isset($error) ) {
 								
@@ -87,7 +87,7 @@
 								
 								$fieldname = $row['name'];
 								$result = $database->query("UPDATE `additional` SET `value`='$addname', `easyupdate`='$addeu' WHERE `tcg`='$id' AND `name`='$fieldname'");
-								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysql_error().""; }
+								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysqli_error().""; }
 							
 							}
 							
@@ -98,7 +98,7 @@
 							if ( $newfield != '' && $newfield != 'new field' && $newfield != 'newfield' && $neweu < 2 ) {
 										
 								$result = $database->query("INSERT INTO `additional` (`name`,`tcg`,`value`,`easyupdate`) VALUE ('$newfield','$id','$newvalue','$neweu')");
-								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".mysql_error().""; }
+								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".mysqli_error().""; }
 								else { $success[] = "Your changes and/or additions have been made successfully."; }
 							
 							}
@@ -127,7 +127,7 @@
 			if ( $exists === 1 ) {
 			
 				$result  = $database->query("DELETE FROM `additional` WHERE `id` = '$fieldid' LIMIT 1");
-				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".mysqli_error().""; }
 				else { $success[] = "The field has been removed."; }
 			
 			}
@@ -188,7 +188,7 @@
 			</tr><tr>
 				<td class="top" colspan="2">Additional Fields</td>
 			</tr>
-			<?php $i = 0; while ( $row = mysql_fetch_array($result) ) { $i++; if ( $i % 2 == 0 ) { $class = 'xlight'; } else { $class = 'light'; } ?>
+			<?php $i = 0; while ( $row = mysqli_fetch_array($result) ) { $i++; if ( $i % 2 == 0 ) { $class = 'xlight'; } else { $class = 'light'; } ?>
 			<tr class="<?php echo $class; ?>">
 				<td width="200"><strong><?php echo $row['name']; ?></strong></td>
 			  <td><input name="<?php echo $row['name']; ?>_add" type="text" id="<?php echo $row['name']; ?>_add" value="<?php echo $row['value']; ?>" size="50" /> <input name="<?php echo $row['name']; ?>_eu" type="checkbox" id="<?php echo $row['name']; ?>_eu" value="1" <?php if ( $row['easyupdate'] == 1 ) { echo 'checked'; } ?>> <a href="manage.php?id=<?php echo $id; ?>&action=delete&field=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this field? The contents will be lost completely.'); return go;"><img src="images/delete.gif" alt="delete" /></a></td>

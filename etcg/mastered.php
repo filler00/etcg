@@ -74,7 +74,7 @@
 			$cards = implode(', ',$cards);
 			
 			$result = $database->query("UPDATE `collecting` SET `cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `format`='$format', `mastereddate`='$mastereddate' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysqli_error().""; }
 			else { $success[] = "The deck has been updated$success2!"; }
 			
 		}
@@ -151,7 +151,7 @@
 				
 				$result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$id' ORDER BY `priority` DESC");
 				
-				while ( $row = mysql_fetch_array($result) ) {
+				while ( $row = mysqli_fetch_array($result) ) {
 					
 					if ( !isset($error) ) {
 						
@@ -203,7 +203,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `collecting` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysql_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysqli_error().""; }
 			else { $success[] = "The mastered deck and containing cards have been removed."; }
 		
 		}
@@ -222,7 +222,7 @@
 				
 				$filename = $_FILES["file"]["name"];
 				$result = $database->query("UPDATE `collecting` SET `badge` = '$filename' WHERE `id`='".$_GET['deck']."'");
-				if ( !$result ) { $error[] = "Failed to update badge. ".mysql_error().""; }
+				if ( !$result ) { $error[] = "Failed to update badge. ".mysqli_error().""; }
 				else { $success[] = "The new badge has been added."; }
 				
 			}
@@ -278,7 +278,7 @@
     	<?php  
 			
 			$result = $database->query("SELECT * FROM `collecting` WHERE `tcg`='$id' AND `mastered` = '1' ORDER BY `mastereddate`");
-			while ( $row = mysql_fetch_assoc($result) ) {
+			while ( $row = mysqli_fetch_assoc($result) ) {
 				echo '<a href="mastered.php?id='.$id.'&deck='.$row['id'].'"><img src="'.$tcginfo['cardsurl'].''.$row['badge'].'" alt="'.$row['deck'].'" title="Mastered '.$row['mastereddate'].'" /></a> ';
 			}
 		
