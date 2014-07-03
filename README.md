@@ -69,11 +69,9 @@ Settings and additional fields for individual TCGs can be managed here. The deta
 	- **LOW PRIORITY**: The default priority value. Intended for cards that you are willing to trade away unconditionally. Cards is this category will be searched first whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category will also be searched LAST when using the "grab" feature to move cards to a new collecting deck.
 	- **MEDIUM PRIORITY**: Intended for cards that you value more than Low priority cards, but are still willing to trade away (keeping or future decks). Cards in this category will be searched second (after low priority categories) whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched second (after high priority cards) when using the "grab" feature to move cards to a new collecting deck.
 	- **HIGH PRIORTITY**: Intended for cards that you will probably (if not definately) be collecting, and that you will not even consider trading away. Cards in this category will NOT be searched whenever someone requests cards from you via the trade form, as well as when you are adding cards to a pending trade via the "grab" feature. This category is searched FIRST when using the "grab" feature to move cards to a new collecting deck.
-
 - **New Category**: Fill this out to add a new card category. The checkbox is for the AUTO feature. Select it if you want cards that are added to this category to be uploaded automatically (should the feature be turned on in the TCG's settings).
 I suggest setting up and organizing your categories by worth and priority. For example, I might make a category with the name "regkeeping" for cards that are worth 1 and of a medium priority. Then another called "speckeeping" (for cards worth 2, medium priority), "regtrading" (for cards worth 1, low priority), and "spectrading" (for cards worth 2, low priority).
 You can also make categories for member cards, trade patches, items, and other miscellaneous things. Set the priority to HIGH if they can't be traded and worth to 0 if they don't count towards your card worth.
-
 - **AUTO**: You can turn the auto upload feature on or off for each category by selecting/deselecting this checkbox.
 - **Upload URL**: If the cards in a category are kept in a directory other than the default defined in your TCG settings, you can define a different directory for the category here. If the card directory is the same as the one defined as the default in your TCG settings, leave the value of this field as 'default'.
 
@@ -84,14 +82,11 @@ You can also make categories for member cards, trade patches, items, and other m
 - **Break**: Defines where to insert a line break (ex. input 5 to insert a line break after every 5 cards.). Set the value to 0 if you don't want line breaks.
 - **Filler**: The filler card file name. This is used to show missing cards in your deck collection. Must be the same format as defined in the TCG settings.
 - **Pending**: The pending card file name. This is used to show cards that you may be receiving from a trade. Must be the same format as defined in the TCG settings.
-
 - **Cards**: The cards that you currently have. Only insert the card numbers. ex. Instead of putting deckname01, deckname02, deckname03, put 01, 02, 03.
 OR
 - **Grab From Categories**: If this option is selected, the value of the 'cards' field is ignored and the "grab" feature will search for cards in your card categories that match the supplied deck name. It will not grab doubles. The cards that it finds will be removed from the card categories and added to the new collecting deck.
-
 - **AUTO**: You can turn the auto upload feature on or off for each collecting deck by selecting/deselecting this checkbox.
 - **Auto URL**: If the cards in a collecting deck are kept in a directory other than the default defined in your TCG settings, you can define a different directory for the deck here. If the card directory is the same as the one defined as the default in your TCG settings, leave the value of this field as 'default'.
-
 - **Puzzle**: Select this option to bring the cards closer together (eliminate spaces). Ideal for "puzzle" decks.
 - **Sort**: The order that you would like the decks displayed in, in ascending order. Decks with the same sort value are ordered by worth and deck name.
 
@@ -128,15 +123,11 @@ Trade requests submitted via the tradeform.php that came with your easyTCG downl
 - **Trading Cards**: The cards that you are trading away. The categories that these cards were pulled from should be defined so that they are still added to your card worth. They will also be replaced in these categories should you cancel the trade.
 - **Receiving Cards**: The cards that you will be receiving from the trade. Select a category from the drop down menu to define the category that the cards should be sent to should the trade be completed.
 - **Grab From Categories**: Selecting this option when you add a new pending trade will enable the "grab" feature, which will search for the cards defined in the 'trading cards' field, remove them from the card categories, and add them to the pending trade. If a card is not found, it will display an error and the pending trade will be added without the card.
-
 - **Email Cards**: This option will appear for pending trades where the trader's email has been supplied. If this option is selected, the trader will be emailed when you click "complete trade" with an overview of the trade and URL links to their new cards.
-
 - **UPDATE Button**: This button will update the data for the trade and add any new fields that you have defined.
-
 - **COMPLETE TRADE Button**: The pending trade and all 'trading' cards will be removed, and receiving cards will be added to the indicated categories. If that category has the AUTO feature enabled, the images will be uploaded as well.
 If collecting is selected as the category, cards are added to a collecting deck with a matching name. If no collecting deck is found with a matching name, a new collecting deck is created. (*)
 	- _* Do NOT rely on this feature if you can help it. The way that the script generates the deck name from the card name is not fool proof, and the settings may not be what you were expecting. Set up the collecting deck yourself through the Collecting Decks manager FIRST._
-
 - **REMOVE TRADE Button**: The pending trade will be removed and 'trading' cards are replaced in their categories.
 
 ##ETCG TRADE FORM
