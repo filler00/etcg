@@ -479,4 +479,5 @@ function cardcount ($tcg,$type = '',$cat = '') {
 
 }
 
+include_once('mods.php');
 ?>
