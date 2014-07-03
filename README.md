@@ -5,10 +5,10 @@ For updates please see: https://github.com/tooblue/etcgfm/releases
 EasyTCG FM is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 ##SPECIFICATIONS
-1.	Size: 211 KB
-2.	PHP 5.2 and up **
-3.	One MySQL Database.
-4.	JavaScript enabled.
+1. Size: 211 KB
+2. PHP 5.2 and up **
+3. 1 MySQL Database (MySQL v4.1.3+)
+4. JavaScript enabled
 
 *Because the script utilizes the `filter_var()` PHP function to validate emails and URLs, this script is compatible only with 5.2 and up. If you still want to use the script and you have some PHP know-how, you can go through the files and replace all occurances of filter_var() with a preg_match() equivalent, or remove it altogether at your own risk.*
 
