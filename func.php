@@ -468,7 +468,11 @@ function cardcount ($tcg,$type = '',$cat = '') {
 
 include_once('mods.php');
 <<<<<<< HEAD
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> 4524b2dd24c5133b5a97fc1569bd6716b8824d57
 =======
 ?>
 >>>>>>> 4524b2dd24c5133b5a97fc1569bd6716b8824d57
