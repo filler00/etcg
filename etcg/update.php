@@ -74,7 +74,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 				
 				if ( $logtype == 'activity' ) { $logtype = 'activitylog'; } else { $logtype = 'tradelog'; }
 				
-				$oldlog = mysqli_real_escape_string($tcginfo[$logtype]);
+				$oldlog = $sanitize->for_db($tcginfo[$logtype]);
 				
 				if ( strpos($oldlog,$logdate) !== false ) { $tradelog = str_replace($logdate,"$logdate\n$log",$oldlog); }
 				else { $tradelog = "$logdate\n$log\n\n".$oldlog.""; }
