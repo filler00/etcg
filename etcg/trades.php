@@ -287,7 +287,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 			$date = date("$dateformat");
 			$logdate = str_replace('[DATE]',$date,$dateheaderformat);
 			
-			$oldlog = mysqli_real_escape_string($tcginfo['tradelog']);
+			$oldlog = $sanitize->for_db($tcginfo['tradelog']);
 				
 			if ( strpos($oldlog,$logdate) !== false ) { $tradelog = str_replace($logdate,"$logdate\n$log",$oldlog); }
 			else { $tradelog = "$logdate\n$log\n\n".$oldlog.""; }
