@@ -310,7 +310,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 					$tpost = $tpost['value'];
 					
 					$message = "$usermessage \n\nTrade Overview: Your $receiving for my $giving \n\nYour Cards: $givinglinks \n\n- ".$username." \n$tpost";
-					$headers = "From: ".$username." <$useremail> \r\n";
+					$headers = "From: $username \r\n";
 					$headers.= "Reply-To: $useremail";
 					if ( !mail($email,''.$tcginfo['name'].' Trade',$message,$headers) ) { $error[] = "Could not email the trader"; } else { $success[] = "Notification email sent to $trader with cards included.";  }
 				}
