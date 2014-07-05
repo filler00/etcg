@@ -61,7 +61,7 @@
 			else if ( $lastupdated == '' ) { $error[] = "Invalid Last Updated field value."; }
 			else if ( $status != 'active' && $status != 'hiatus' && $status != 'inactive' ) { $error[] = "Invalid Status field value."; }
 			else if ( !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) || !filter_var($cardsurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
-			else if ( $defaultauto != '' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
+			else if ( $defaultauto != '' && $defaultauto != '/' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
 			else if ( $autoupload != '0' && $autoupload != '1'  ) { $error[] = "Invalid value for the Auto Upload field."; }
 			else if ( $newfield != '' && $newfield != 'new field' && $exists2 != 0 ) { $error[] = "An additional field with that name already exists."; }
 			else {
