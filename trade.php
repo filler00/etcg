@@ -133,7 +133,7 @@
 			$etcgurl = $etcgurl['value'];
 			$tcgname = $database->get_assoc("SELECT `name` FROM `tcgs` WHERE `id`='$tcg'");
 			$tcgname = $tcgname['name'];
-			$headers = "From: $name <$email> \r\n";
+			$headers = "From: $name \r\n";
 			$headers.= "Reply-To: $email";
 			$message = "New Incoming Trade Request for $tcgname: \n\nName: $name \nEmail: $email \nWebsite: $website \nTCG: $tcgname \nCards Wanted: $wants \nCards Offered: $offer \nComments: $comments \n\nManage $tcgname Trades: ".$etcgurl."trades.php?id=$tcg";
 			
