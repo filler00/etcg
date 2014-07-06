@@ -1,6 +1,6 @@
 #EasyTCG
-For updates & release details, please see: https://github.com/tooblue/etcg/releases
-For documentation & how-to's, please see: https://github.com/tooblue/etcg/wiki
+- For updates & release details, please see: https://github.com/tooblue/etcg/releases
+- For documentation & how-to's, please see: https://github.com/tooblue/etcg/wiki
 
 ##LICENSE
 EasyTCG is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
