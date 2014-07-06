@@ -1,5 +1,5 @@
 #EasyTCG FM
-For updates please see: https://github.com/tooblue/etcgfm/releases
+For updates please see: https://github.com/tooblue/etcg/releases
 
 ##LICENSE
 EasyTCG FM is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
