@@ -1,8 +1,8 @@
-#EasyTCG FM
+#EasyTCG
 For updates please see: https://github.com/tooblue/etcg/releases
 
 ##LICENSE
-EasyTCG FM is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+EasyTCG is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 ##SPECIFICATIONS
 1. Size: 211 KB
@@ -118,7 +118,7 @@ If collecting is selected, cards are added to a collecting deck with a matching 
 ##TRADES
 By default, this page will show all pending trades for your active TCGs (the counter in the navigation shows total trades, including those from hiatus/inactive TCGs). If you click "trade" under the "Quick Access" section on the index, or on the "Manage TCGs" page, it will show trades only for the corresponding TCG.
 
-Trade requests submitted via the tradeform.php that came with your easyTCG download will be automatically added to the database, and can be seen on this page under the "incoming" headers. You can also manually add pending trades by clicking "New Pending Trade" under the appropriate TCG's header.
+Trade requests submitted via the tradeform.php that came with your EasyTCG download will be automatically added to the database, and can be seen on this page under the "incoming" headers. You can also manually add pending trades by clicking "New Pending Trade" under the appropriate TCG's header.
 
 - **Trading Cards**: The cards that you are trading away. The categories that these cards were pulled from should be defined so that they are still added to your card worth. They will also be replaced in these categories should you cancel the trade.
 - **Receiving Cards**: The cards that you will be receiving from the trade. Select a category from the drop down menu to define the category that the cards should be sent to should the trade be completed.
