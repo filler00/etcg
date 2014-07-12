@@ -28,6 +28,6 @@ EasyTCG is open-sourced software licensed under the [MIT license](http://opensou
 ##UPGRADING
 *Follow these instructions if you are upgrading from an older version of eTCG.*
 
-1. DELETE the `etcg/config.php` and `etcg/install.php` files included in the download. You should continue to use your old 'config.php' file, and `install.php`is only necessary for first-time installs - **Do NOT attempt to run 'install.php'**.
+1. DELETE the `etcg/config.php` and `etcg/install.php` files included in the download. You should continue to use your old `config.php` file, and `install.php`is only necessary for first-time installs - **Do NOT attempt to run `install.php`**.
 2. Replace your old eTCG files with the new ones.
 3. Follow any additional instructions outlined in the [release notes](https://github.com/tooblue/etcg/releases).
