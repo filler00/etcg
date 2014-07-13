@@ -362,7 +362,7 @@
 							
 							if ( $deckinfo['format'] !== 'default' ) { $format = $deckinfo['format']; } else { $format = $tcginfo['format']; }
 							
-							$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$id' AND `receiving` LIKE '%$card%'");
+							$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$id' AND `receiving` RLIKE '(^| )$card(,|;|$)'");
 							
 							if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$format.'" alt="" />';
 							else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$deckinfo['pending'].'.'.$format.'" alt="" />'; }

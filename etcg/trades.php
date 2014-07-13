@@ -159,15 +159,17 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 						
 						foreach ( $cardgroup as $card ) {
 						
-							$deck = preg_replace('/[^a-z_-]{2,3}$/i', '', $card);
-							$exists = $database->num_rows("SELECT `id` FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
+							preg_match('/^([a-z0-9-_]+)([0-9]{2})$/i', $card, $matches);
+							$deck = $matches[1];
+							
+							$exists = $database->num_rows("SELECT `id` FROM `collecting` WHERE `deck`='$deck' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
 							if ( $exists == 0 ) { 
 								$result = $database->query("INSERT INTO `collecting` (`tcg`,`deck`,`cards`,`worth`,`count`,`break`,`filler`,`pending`,`puzzle`,`auto`,`uploadurl`) VALUE ('".$tcginfo['id']."','$deck','$card','1','15','5','filler','pending','0','0','default')");
 								if ( !$result ) { $error[] = "Failed to add $card to a collecting deck."; }
 								else { $success[] = "No existing collecting deck was found matching $card. Created a new collecting deck for $card titled $deck."; }
 							}
 							else {
-								$collectinginfo = $database->get_assoc("SELECT * FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
+								$collectinginfo = $database->get_assoc("SELECT * FROM `collecting` WHERE `deck`='$deck' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
 								$collectingid = $collectinginfo['id'];
 								$collectingcards = $collectinginfo['cards'];
 								$collectingauto = $collectinginfo['auto'];
@@ -250,13 +252,15 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 					
 					foreach ( $cardgroup as $card ) {
 						
-						$deck = preg_replace('/[^a-z_-]{2,3}$/i', '', $card);
+						preg_match('/^([a-z0-9-_]+)([0-9]{2})$/i', $card, $matches);
+						$deck = $matches[1];
+						
 						if ( $givingcat[$i] == 'collecting' ) {
-							if ( $database->num_rows("SELECT `format` FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1") == 0 ) {
+							if ( $database->num_rows("SELECT `format` FROM `collecting` WHERE `deck`='$deck' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1") == 0 ) {
 								$catinfo = '';
 							}
 							else {
-								$catinfo = $database->get_assoc("SELECT `format` FROM `collecting` WHERE `deck` LIKE '%$deck%' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
+								$catinfo = $database->get_assoc("SELECT `format` FROM `collecting` WHERE `deck`='$deck' AND `tcg`='".$tcginfo['id']."' AND `mastered`='0' LIMIT 1");
 							}
 						} else {
 							$catinfo = $database->get_assoc("SELECT `format` FROM `cards` WHERE `tcg`='$tcgid' AND `category`='".$givingcat[$i]."'");
