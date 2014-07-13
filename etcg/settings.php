@@ -65,54 +65,83 @@ foreach ($settings as $setting) {
 }
 
 ?>
+<div class="content col-12 col-sm-12 col-lg-12">
+	<h1>EasyTCG Settings</h1>
+	<p>These are the settings for your EasyTCG installation. To manage the settings for your TCGs, select a TCG from the dropdown menu on the right.</p>
 
-<h1>Edit Settings</h1>
-<p>These are the settings for your easyTCG installation. To manage the settings for your TCGs, select a TCG from the dropdown menu on the left.</p>
+	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Error!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
+	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
 
-<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
-
-<form action="" method="post">
-<table class="style1" width="100%" align="center" cellpadding="5" cellspacing="5">
-	<tr>
-    	<td class="top" colspan="2">Settings</td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Your Name</strong></td>
-   	  <td>This is your name and username. It will be included in any outgoing emails.<br /><input name="username" type="text" id="username" value="<?php echo $username; ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Password</strong></td><td><em>Only fill out if changing.</em><br /><input name="password" type="password" id="password" value="" /> <input name="password2" type="password" id="password2" value="" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Your Email</strong></td>
-   	  <td>All outgoing emails will be sent from this address.<br /><input name="email" type="text" id="email" value="<?php echo $email; ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Trade Post URL</strong></td>
-   	  <td>The URL to your tradepost. This will be included at the bottom of any outgoing emails.<br /><input name="url" type="text" id="url" value="<?php echo $url; ?>" size="50" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>eTCG URL</strong></td>
-   	  <td>The URL to your easyTCG admin panel.<br /><input name="etcgurl" type="text" id="etcgurl" value="<?php echo $etcgurl; ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Log Date Format</strong></td>
-    	<td>The date format for your log entries. Ex. <em>F d, Y</em> = <?php echo date("F d, Y"); ?>, <em>m/d/y</em> = <?php echo date("m/d/y"); ?>. For more date formatting options, <a href="http://php.net/manual/en/function.date.php" target="_blank">click here</a>.<br />
-        <input name="dateformat" type="text" id="dateformat" value="<?php echo $dateformat; ?>" size="50" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Date Header Format</strong></td>
-    	<td>This is the format for date headers in your logs. easyTCG will look for and use this pattern when attempting to automatically insert log entries. Use <em>[DATE]</em> to indicate where the date will be inserted in the pattern.<br />
-        <input name="dateheaderformat" type="text" id="dateheaderformat" value="<?php echo $dateheaderformat; ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Hiatus Trading</strong></td>
-    	<td>Allow trading for TCGs with the status <em>hiatus</em>.<br /><label><input name="hiatustrading" type="radio" value="1" <?php if ( $hiatustrading == 1 ) { echo 'checked="checked"'; } ?> /> Enable</label> 
-    	<label><input name="hiatustrading" type="radio" value="0" <?php if ( $hiatustrading == 0 ) { echo 'checked="checked"'; } ?> /> Disable</label></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Inactive Trading</strong></td><td>Allow trading for TCGs with the status <em>inactive</em>.<br /><label><input name="inactivetrading" type="radio" value="1" <?php if ( $inactivetrading == 1 ) { echo 'checked="checked"'; } ?> /> Enable</label> 
-    	<label><input name="inactivetrading" type="radio" value="0" <?php if ( $inactivetrading == 0 ) { echo 'checked="checked"'; } ?> /> Disable</label></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Email Message</strong></td>
-   	  <td><em>Optional</em>. Enter a short message to include at the top of trade-acceptance emails. A trade overview and the cards that you traded away will be included below this message.<br />
-      <textarea name="emailmessage" cols="50" id="emailmessage"><?php echo $emailmessage; ?></textarea></td>
-    </tr><tr>
-   	  <td colspan="2" align="right" class="xdark"><input name="update" type="submit" id="update" value="Update" /> <input name="Reset" type="reset" id="submit" value="Reset Fields" /></td>
-    </tr>
-</table>
-</form>
+	<form action="" method="post" role="form">
+		<div class="form-group">
+			<label for="username">Your Name</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="This is your name and username. It will be included in any outgoing emails."></i>
+			<input type="text" class="form-control" name="username" id="username" value="<?php echo $username; ?>">
+		</div>
+		<div class="form-group">
+			<label for="password">Password</label> <em>Only fill out if changing. Type twice.</em>
+			<div class="row">
+				<div class="col-xs-6">
+					<input type="password" class="form-control" name="password" id="password">
+				</div>
+				<div class="col-xs-6">
+					<input type="password" class="form-control" name="password2" id="password2">
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="email">Your Email</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="All outgoing emails will be sent from this address."></i>
+			<input type="email" class="form-control" name="email" id="email" value="<?php echo $email; ?>">
+		</div>
+		<div class="form-group">
+			<label for="url">Trade Post URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The URL to your tradepost. This will be included at the bottom of any outgoing emails."></i>
+			<input type="url" class="form-control" name="url" id="url" value="<?php echo $url; ?>">
+		</div>
+		<div class="form-group">
+			<label for="etcgurl">EasyTCG Admin URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The URL to your EasyTCG admin panel."></i>
+			<input type="url" class="form-control" name="etcgurl" id="etcgurl" value="<?php echo $etcgurl; ?>">
+		</div>
+		<div class="form-group">
+			<label for="dateformat">Log Date Format</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The date format for your log entries. Ex. 'F d, Y' = <?php echo date("F d, Y"); ?>, 'm/d/y' = <?php echo date("m/d/y"); ?>."></i>
+			<input type="text" class="form-control" name="dateformat" id="dateformat" value="<?php echo $dateformat; ?>">
+		</div>
+		<div class="form-group">
+			<label for="dateheaderformat">Date Header Format</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="This is the format for date headers in your logs. EasyTCG will look for and use this pattern when attempting to automatically insert log entries. Use [DATE] to indicate where the date will be inserted in the pattern."></i>
+			<input type="text" class="form-control" name="dateheaderformat" id="dateheaderformat" value="<?php echo $dateheaderformat; ?>">
+		</div>
+		<div class="form-group">
+			<label for="hiatustrading">Hiatus Trading</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Enable to allow trading for TCGs with the status 'hiatus'."></i>
+			<label class="radio-inline">
+				<input type="radio" name="hiatustrading" id="hiatustrading" value="1" <?php if ( $hiatustrading == 1 ) { echo 'checked="checked"'; } ?>> Enable
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="hiatustrading" id="hiatustrading" value="0" <?php if ( $hiatustrading == 0 ) { echo 'checked="checked"'; } ?>> Disable
+			</label>
+		</div>
+		<div class="form-group">
+			<label for="inactivetrading">Inactive Trading</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Enable to allow trading for TCGs with the status 'inactive'."></i>
+			<label class="radio-inline">
+				<input type="radio" name="inactivetrading" id="inactivetrading" value="1" <?php if ( $inactivetrading == 1 ) { echo 'checked="checked"'; } ?>> Enable
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="inactivetrading" id="inactivetrading" value="0" <?php if ( $inactivetrading == 0 ) { echo 'checked="checked"'; } ?>> Disable
+			</label>
+		</div>
+		<div class="form-group">
+			<label for="emailmessage">Email Message</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Enter a short message to include at the top of trade-acceptance emails. A trade overview and the cards that you traded away will be included below this message."></i> <em>Optional</em>
+			<textarea class="form-control" rows="3" name="emailmessage" id="emailmessage"><?php echo $emailmessage; ?></textarea>
+		</div>
+		<button name="update" type="submit" id="update" class="btn btn-primary btn-block">Update</button>
+	</form>
+</div>
 
 <?php include 'footer.php'; ?>

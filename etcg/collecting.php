@@ -1,6 +1,8 @@
 <?php include 'header.php'; if ( !isset($_GET['id']) || $_GET['id'] == '' ) { ?>
-           
-<h1>Collecting Cards</h1>
+
+<div class="content col-12 col-sm-12 col-lg-12">
+	<h1>Collecting Cards</h1>
+</div>
 
 <?php } else if ( $_GET['id'] != '' ) {
 	
@@ -228,106 +230,203 @@
 	}
 	
 	?>
-    
-    <h1>Collecting: <?php echo $tcginfo['name']; ?></h1>
-	<p>Selecting the <strong>auto</strong> option will allow the auto upload system to automatically upload cards that are added to that category through the Easy Updater. The auto upload feature must be enabled in the TCG's settings as well for this to work. Deselect the auto checkbox to disable auto uploading for that category. Leave the <strong>auto url</strong> as <em>default</em> unless the Auto Upload URL for that category is different from the default defined in the TCG's settings.</p>
-	<p>Upload filler and pending cards to your cards folder. Only type the file name into the filler/pending fields (ex. if the file is  filler.gif, just type 'filler')</p>
-    <p>&raquo; <a href="cards.php?id=<?php echo $id; ?>">View Categories</a> <br />&raquo; <a href="mastered.php?id=<?php echo $id; ?>">View Mastered</a></p>
-    
-    <?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
-    
-    <br />
-    <form action="collecting.php?id=<?php echo $id; ?>" method="post">
-	<p align="center"><strong>New Collecting</strong>:</p>
-    <table cellspacing="5" cellpadding="0" align="center">
-      <tr>
-        <td><input name="deck" type="text" id="deck" value="deck" onfocus="if (this.value=='deck') this.value='';" onblur="if (this.value=='') this.value='deck';"></td>
-        <td><input name="worth" type="text" id="worth" value="worth" size="3" onfocus="if (this.value=='worth') this.value='';" onblur="if (this.value=='') this.value='worth';"></td>
-        <td><input name="count" type="text" id="count" value="count" size="3" onfocus="if (this.value=='count') this.value='';" onblur="if (this.value=='') this.value='count';"></td>
-        <td><input name="break" type="text" id="break" value="break" size="3" onfocus="if (this.value=='break') this.value='';" onblur="if (this.value=='') this.value='break';"></td>
-        <td><input name="filler" type="text" id="filler" value="filler" size="8" onfocus="if (this.value=='filler') this.value='';" onblur="if (this.value=='') this.value='filler';"></td>
-        <td><input name="pending" type="text" id="pending" value="pending" size="8" onfocus="if (this.value=='pending') this.value='';" onblur="if (this.value=='') this.value='pending';"></td>
-      </tr>
-      <tr>
-        <td colspan="3"><input name="cards" type="text" id="cards" value="cards (01, 02, 03)" size="35" onfocus="if (this.value=='cards (01, 02, 03)') this.value='';" onblur="if (this.value=='') this.value='cards (01, 02, 03)';" /></td>
-        <td><strong>OR</strong></td>
-        <td colspan="2">grab from categories: <input name="findcards" type="checkbox" value="1" id="findcards"></td>
-      </tr>
-      <tr>
-        <td colspan="2">format: <input name="format" type="text" value="default" id="format" /></td>
-		<td colspan="3">auto url: <input name="autourl" type="text" value="default" id="autourl" /></td>
-        <td colspan="1">auto: <input name="auto" type="checkbox" value="1" id="auto" /></td>
-      </tr>
-      <tr>
-        <td colspan="6" align="right"><input name="newcat" type="submit" value="Submit" id="newcat"></td>
-      </tr>
-    </table>
-    </form>
-    
-    <?php
-	$result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$id' AND `mastered` = '0' ORDER BY `sort`, `worth`, `deck`");
-	while ( $row = mysqli_fetch_assoc($result) ) { 
+    <div class="content col-12 col-sm-12 col-lg-12">
 	
-		$cards = explode(',',$row['cards']); 
-			
-		array_walk($cards, 'trim_value');
+		<h1>Collecting <small><?php echo $tcginfo['name']; ?></small></h1>
+		<p class="clearfix">
+			&raquo; <a href="cards.php?id=<?php echo $id; ?>">View Categories</a> &nbsp; 
+			&raquo; <a href="mastered.php?id=<?php echo $id; ?>">View Mastered</a>
+			<button class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#new-collecting-modal"><i class="fa fa-plus"></i> &nbsp; New Collecting</button>
+		</p>
+
+		<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Error!</strong> <?php echo $msg; ?>
+		</div>
+		<?php } } ?>
+		<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> <?php echo $msg; ?>
+			</div>
+		<?php } } ?>
 		
-		if ( $row['cards'] == '' ) { $count = 0; } else { $count = count($cards); }
-		?>
-    	
-        <br />
-		<h2><?php echo $row['deck']; ?> (<?php echo $count; ?>/<?php echo $row['count']; ?>) <a href="collecting.php?id=<?php echo $id; ?>&action=delete&cat=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this collecting deck? The contents will be lost completely.'); return go;"><img src="images/delete.gif" alt="delete" /></a></h2>
-        <p align="center">
-        	<?php
-				for ( $i = 1; $i <= $row['count']; $i++ ) {
-					
-					$number = $i;
-					if ( $number < 10 ) { $number = "0$number"; }
-					$card = "".$row['deck']."$number";
-					
-					if ( $row['format'] !== 'default' ) { $format = $row['format']; } else { $format = $tcginfo['format']; }
-					
-					$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$id' AND `receiving` LIKE '%$card%'");
-					
-					if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$format.'" alt="" />';
-					else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$row['pending'].'.'.$format.'" alt="" />'; }
-					else { echo '<img src="'.$tcginfo['cardsurl'].''.$row['filler'].'.'.$format.'" alt="" />'; }
-					
-					if ( $row['puzzle'] == 0 ) { echo ' '; }
-					if ( $row['break'] !== '0' && $i % $row['break'] == 0 ) { echo '<br />'; }
-					
-				}
+		<div class="modal fade" id="new-collecting-modal" tabindex="-1" role="dialog" aria-labelledby="new-collecting-label" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h2 class="modal-title" id="new-collecting-label">New Collecting Deck</h2>
+					</div>
+					<div class="modal-body">
+						<form action="collecting.php?id=<?php echo $id; ?>" method="post" role="form">
+						<div class="form-group">
+							<label for="deck">Deck Name</label>
+							<input name="deck" id="deck" type="text" class="form-control">
+						</div>
+						<div class="form-group">
+							<label for="worth">Card Worth</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The worth of each card in the deck."></i>
+							<input name="worth" id="worth" type="number" class="form-control" placeholder="ie. 1">
+						</div>
+						<div class="form-group">
+							<label for="count">Card Count</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The total number of cards in the deck when completed."></i>
+							<input name="count" id="count" type="number" class="form-control" placeholder="ie. 15">
+						</div>
+						<div class="form-group">
+							<label for="break">Break Points</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Defines where to insert a line break (ie. input 5 to insert a line break after every 5 cards). Set the value to 0 if you don't want line breaks."></i>
+							<input name="break" id="break" type="number" class="form-control" placeholder="ie. 5">
+						</div>
+						<div class="form-group">
+							<label for="filler">Filler Card Image</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Upload filler card images to your cards folder. Only type the file name into the field - no file format."></i>
+							<input name="filler" id="filler" type="text" class="form-control" placeholder="Filler card image name" value="filler">
+						</div>
+						<div class="form-group">
+							<label for="pending">Pending Card Image</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Upload pending card images to your cards folder. Only type the file name into the field - no file format."></i>
+							<input name="pending" id="pending" type="text" class="form-control" placeholder="Pending card image name" value="pending">
+						</div>
+						<div class="form-group">
+							<label for="format">Image Format</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Format defined in the TCG Settings."></i>
+							<input name="format" id="format" type="text" class="form-control" placeholder="ie. '.png'" value="default">
+						</div>
+						<div class="form-group">
+							<label for="cards">List Cards</label> OR <label for="findcards">Grab From Categories</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="If you check the checkbox, EasyTCG will search your categories and move any matching cards into the new collecting deck. Cards listed in the input field to the left will be IGNORED."></i>
+							<div class="input-group">
+								<input id="cards" name="cards" type="text" class="form-control" placeholder="01, 02, 03">
+								<span class="input-group-addon">
+									<input name="findcards" type="checkbox" value="1" id="findcards" data-toggle="tooltip" data-placement="top" title="Grab From Categories">
+								</span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="autourl">Auto-Upload URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Auto-Upload URL defined in the TCG Settings."></i>
+							<div class="input-group">
+								<input id="autourl" name="autourl" type="text" class="form-control" value="default">
+								<span class="input-group-addon">
+									<input name="auto" type="checkbox" id="auto" value="1" <?php if ( $row['auto'] == 1 ) { echo 'checked="checked"'; } ?> data-toggle="tooltip" data-placement="top" title="Enable Auto-Upload">
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button name="newcat" id="newcat" type="submit" class="btn btn-primary">Create Collecting Deck</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<?php
+		$result = $database->query("SELECT * FROM `collecting` WHERE `tcg` = '$id' AND `mastered` = '0' ORDER BY `sort`, `worth`, `deck`");
+		while ( $row = mysqli_fetch_assoc($result) ) { 
+		
+			$cards = explode(',',$row['cards']); 
+				
+			array_walk($cards, 'trim_value');
+			
+			if ( $row['cards'] == '' ) { $count = 0; } else { $count = count($cards); }
 			?>
-        </p>
-        
-            <form action="collecting.php?id=<?php echo $id; ?>" method="post">
-            <input name="id" type="hidden" value="<?php echo $row['id']; ?>" />
-            	<table width="450" align="center">
-                	<tr>
-                        <td colspan="3" align="center">
-                            <input name="cards" type="text" id="cards" value="<?php echo str_replace($row['deck'],'',$row['cards']); ?>" size="70">
-                        </td>
-                 	</tr><tr>
-                    	<td>worth: <input name="worth" type="text" id="worth" value="<?php echo $row['worth']; ?>" size="2" /></td>
-                        <td>count: <input name="count" type="text" id="count" value="<?php echo $row['count']; ?>" size="2" /></td>
-                        <td>break: <input name="break" type="text" id="break" value="<?php echo $row['break']; ?>" size="2" /></td>
-                    </tr><tr>
-                		<td>filler: <input name="filler" type="text" id="filler" value="<?php echo $row['filler']; ?>" size="8" /></td>
-                        <td>pending: <input name="pending" type="text" id="pending" value="<?php echo $row['pending']; ?>" size="8" /></td>
-                        <td>puzzle: <input name="puzzle" type="checkbox" id="puzzle" value="1" <?php if ( $row['puzzle'] == 1 ) { echo 'checked="checked"'; } ?> /></td>
-                    </tr><tr>
-                    	<td colspan="3" align="right"><input name="autourl" type="text" id="autourl" value="<?php echo $row['uploadurl']; ?>" /> auto: <input name="auto" type="checkbox" id="auto" value="1" <?php if ( $row['auto'] == 1 ) { echo 'checked="checked"'; } ?> /></td>
-                    </tr><tr>
-                    	<td colspan="3" align="right">format: <input name="format" type="text" id="format" value="<?php echo $row['format']; ?>" size="8" /> sort: <input name="sort" type="text" id="sort" value="<?php echo $row['sort']; ?>" size="2" /> <input name="update" type="submit" value="Update" id="update" /> <?php if ( $row['count'] == $count ) { echo '<input name="master" type="submit" value="Master" id="master" />'; } ?></td>
-                    </tr>
-                </table>
-          </form>
-        
-        
-<?php
-	}
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<?php echo $row['deck']; ?> (<?php echo $count; ?>/<?php echo $row['count']; ?>)
+				</div>
+				<div class="panel-body">
+
+					<p class="text-center">
+						<?php
+							for ( $i = 1; $i <= $row['count']; $i++ ) {
+								
+								$number = $i;
+								if ( $number < 10 ) { $number = "0$number"; }
+								$card = "".$row['deck']."$number";
+								
+								if ( $row['format'] !== 'default' ) { $format = $row['format']; } else { $format = $tcginfo['format']; }
+								
+								$pending = $database->num_rows("SELECT * FROM `trades` WHERE `tcg`='$id' AND `receiving` LIKE '%$card%'");
+								
+								if ( in_array($card, $cards) ) echo '<img src="'.$tcginfo['cardsurl'].''.$card.'.'.$format.'" alt="" />';
+								else if ( $pending > 0 ) { echo '<img src="'.$tcginfo['cardsurl'].''.$row['pending'].'.'.$format.'" alt="" />'; }
+								else { echo '<img src="'.$tcginfo['cardsurl'].''.$row['filler'].'.'.$format.'" alt="" />'; }
+								
+								if ( $row['puzzle'] == 0 ) { echo ' '; }
+								if ( $row['break'] !== '0' && $i % $row['break'] == 0 ) { echo '<br />'; }
+								
+							}
+						?>
+					</p>
+					
+					<hr>
+					
+					<form action="collecting.php?id=<?php echo $id; ?>" method="post" role="form">
+						<input name="id" type="hidden" value="<?php echo $row['id']; ?>">
+						<div class="form-group">
+							<label for="cards" class="sr-only">Cards</label>
+							<input name="cards" id="cards" type="text" class="form-control" placeholder="01, 02, 03" value="<?php echo str_replace($row['deck'],'',$row['cards']); ?>">
+						</div>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-xs-3">
+									<label for="worth">Worth</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The worth of each card in the deck."></i>
+									<input name="worth" id="worth" type="number" class="form-control" value="<?php echo $row['worth']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="count">Count</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The total number of cards in the deck when completed."></i>
+									<input name="count" id="count" type="number" class="form-control" value="<?php echo $row['count']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="break">Break</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Defines where to insert a line break (ie. input 5 to insert a line break after every 5 cards). Set the value to 0 if you don't want line breaks."></i>
+									<input name="break" id="break" type="number" class="form-control" value="<?php echo $row['break']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="break">Sort</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The order that you would like the decks displayed in, in ascending order. Decks with the same sort value are ordered by worth and deck name."></i>
+									<input name="sort" id="sort" type="number" class="form-control" value="<?php echo $row['sort']; ?>">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="row">
+								<div class="col-xs-3">
+									<label for="filler">Filler</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Upload filler card images to your cards folder. Only type the file name into the field - no file format."></i>
+									<input name="filler" id="filler" type="text" class="form-control" value="<?php echo $row['filler']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="pending">Pending</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Upload pending card images to your cards folder. Only type the file name into the field - no file format."></i>
+									<input name="pending" id="pending" type="text" class="form-control" value="<?php echo $row['pending']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="format">Format</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Format defined in the TCG Settings."></i>
+									<input name="format" id="format" type="text" class="form-control" value="<?php echo $row['format']; ?>">
+								</div>
+								<div class="col-xs-3">
+									<label for="puzzle">Puzzle</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Removes spaces from between card images."></i>
+									<br>
+									<input name="puzzle" type="checkbox" id="puzzle" value="1" <?php if ( $row['puzzle'] == 1 ) { echo 'checked'; } ?>>
+								</div>
+							</div>
+						</div>
+						<label for="autourl">Auto-Upload URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Auto-Upload URL defined in the TCG Settings."></i>
+						<div class="input-group">
+							<input id="autourl" name="autourl" type="text" class="form-control" value="<?php echo $row['uploadurl']; ?>">
+							<span class="input-group-addon">
+								<input name="auto" type="checkbox" id="auto" value="1" <?php if ( $row['auto'] == 1 ) { echo 'checked="checked"'; } ?> data-toggle="tooltip" data-placement="top" title="Enable Auto-Upload">
+							</span>
+						</div>
+				</div>
+				<div class="panel-footer clearfix">
+					<div class="btn-group pull-right">
+						<button name="update" id="update" type="submit" class="btn btn-sm btn-primary">Update Deck</button>
+						<?php if ( $row['count'] == $count ) { ?>
+							<button name="master" id="master" type="submit" class="btn btn-sm btn-success">Master</button>
+						<?php } ?>
+						<a class="btn btn-danger btn-sm" href="collecting.php?id=<?php echo $id; ?>&action=delete&cat=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this collecting deck? The contents will be lost completely.'); return go;" data-toggle="tooltip" data-placement="top" title="Delete This Deck"><i class="fa fa-times-circle"></i></a>
+					</div>
+					</form>
+				</div>
+			</div>
+		<?php } ?>
 	
-?>
+	</div>
 
 <?php } include 'footer.php'; ?>

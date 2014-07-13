@@ -74,60 +74,80 @@ if ( isset($_POST['submit']) ) {
 }
 
 ?>
-           
-<h1>New TCG</h1>
 
-<?php if ( !isset($success) ) { ?>
+<div class="content col-12 col-sm-12 col-lg-12">
+	<h1>New TCG</h1>
 
-<p>Add a new TCG to your easyTCG card manager!</p>
+	<?php if ( !isset($success) ) { ?>
 
-<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
+	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<strong>Error!</strong> <?php echo $msg; ?>
+	</div>
+	<?php } } ?>
+	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
 
-<br />
-
-<form action="" method="post">
-<table class="style1" width="100%" align="center" cellpadding="5" cellspacing="5">
-	<tr>
-    	<td class="top" colspan="2">Settings</td>
-    </tr><tr class="light">
-    	<td width="200"><strong>TCG Name</strong></td>
-    	<td>The name of the new TCG. Feel free to use special characters.<br /><input name="name" type="text" id="name" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['name']; } ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>TCG URL</strong></td><td>The URL to the TCG's website (NOT the URL to your card collection).<br /><input name="url" type="text" id="url" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['url']; } else { echo 'http://'; } ?>" size="50" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Cards Directory URL</strong></td>
-    	<td>The URL to the directory where you will be uploading your cards.<br /><input name="cardsurl" type="text" id="cardsurl" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['cardsurl']; } else { echo 'http://'; } ?>" size="50" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Cards Path</strong></td>
-    	<td>The direct PATH to the directory where you will be uploading your cards. Don't forget <em>trailing slashes</em>.<br /><input name="cardspath" type="text" id="cardspath" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['cardspath']; } else { echo '/'; } ?>" size="50" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Image Format</strong></td>
-    	<td>The image format for your cards. (gif, png, jpg, jpeg)<br /><input name="format" type="text" id="format" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['format']; } else { echo 'gif'; } ?>" size="10" /></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Default Upload URL</strong></td>
-    	<td>The default URL to the directory where the TCG owner has uploaded their cards. This can be changed later for individual card categories. <em>Leave this blank if you will not be using the auto upload feature.</em><br /><input name="defaultauto" type="text" id="defaultauto" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['defaultauto']; } else { echo 'http://'; } ?>" size="50" /></td>
-    </tr><tr class="light">
-    	<td width="200"><strong>Auto Upload</strong></td><td>Select YES to enable the auto upload feature. This feature will attempt to automatically upload your cards directly from the TCG's site.<br /><label><input name="autoupload" type="radio" value="1" />Yes</label> <label><input name="autoupload" type="radio" value="0" checked="checked" /> No</label></td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Status</strong></td><td>Your status in the TCG.<br /><select name="status" id="status">
-    	  <option value="active" selected="selected">Active</option>
-    	  <option value="hiatus">Hiatus</option>
-          <option value="inactive">Inactive</option>
-    	</select></td>
-    </tr><tr>
-    	<td class="top" colspan="2">Additional Fields</td>
-    </tr><tr class="xlight">
-    	<td width="200"><strong>Additonal Fields</strong></td>
-    	<td>You can use additional fields to keep track of currency, items, coupons, etc. Separate the names of additonal fields with commas. Leave it blank if you don't want to use this feature.<br /><input name="additional" type="text" id="additional" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['additional']; } ?>" size="50" /></td>
-    </tr><tr>
-    	<td colspan="2" align="right" class="xdark"><input name="submit" type="submit" id="submit" value="Add This TCG" /> <input name="Reset" type="reset" id="submit" value="Reset Fields" /></td>
-    </tr>
-</table>
-</form>
+	<form action="" method="post" role="form">
+		<div class="form-group">
+			<label for="name">TCG Name</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The name of the new TCG. Feel free to use special characters."></i>
+			<input name="name" id="name" type="text" class="form-control" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['name']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="url">TCG URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The URL to the TCG's website (NOT the URL to your tradepost)."></i>
+			<input name="url" id="url" type="url" class="form-control" placeholder="http://" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['url']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="cardsurl">Cards Directory URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The URL to the directory where you will be uploading your cards."></i>
+			<input name="cardsurl" id="cardsurl" type="url" class="form-control" placeholder="http://" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['cardsurl']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="cardspath">Cards Path</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The direct PATH to the directory where you will be uploading your cards. Don't forget trailing slashes."></i>
+			<input name="cardspath" id="cardspath" type="text" class="form-control" placeholder="/home/user/tcg/cards/" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['cardspath']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="format">Image Format</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The image format for your cards. (gif, png, jpg, jpeg)"></i>
+			<input name="format" id="format" type="text" class="form-control" placeholder="ie. 'png'" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['format']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="defaultauto">Default Upload URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The default URL to the directory where the TCG owner has uploaded their cards. This can be changed later for individual card categories. Leave this blank if you will not be using the auto upload feature."></i>
+			<input name="defaultauto" id="defaultauto" type="url" class="form-control" placeholder="http://" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['defaultauto']; } ?>">
+		</div>
+		<div class="form-group">
+			<label for="autoupload">Auto Upload</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Select YES to enable the auto upload feature. This feature will attempt to automatically upload your cards directly from the TCG's site."></i>			
+			<label class="radio-inline">
+				<input type="radio" name="autoupload" id="autoupload1" value="1"> Yes
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="autoupload" id="autoupload2" value="0" checked> No
+			</label>
+		</div>
+		<div class="form-group">
+			<label for="status">Status</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Your status in the TCG."></i>
+			<select name="status" id="status" class="form-control">
+				<option value="active" selected>Active</option>
+				<option value="hiatus">Hiatus</option>
+				<option value="inactive">Inactive</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="additional">Additional Fields</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="You can use additional fields to keep track of currency, items, coupons, etc. Separate the names of additional fields with commas. Leave it blank if you don't want to use this feature."></i>
+			<input name="additional" id="additional" type="text" class="form-control" value="<?php if ( isset($_POST['submit']) ) { echo $_POST['additional']; } ?>">
+		</div>
+		<button name="submit" type="submit" id="submit" class="btn btn-primary btn-block">Add This TCG</button>
+	</form>
+</div>
 
 <?php } else { ?>
 
 <p><strong>The new TCG with the name <em><?php echo $name; ?></em> has been added successfully!</strong></p>
 <p>&raquo; <a href="index.php">Return to Dashboard</a><br />&raquo; <a href="newtcg.php">Add Another TCG</a></p>
+
+</div>
             
 <?php } include 'footer.php'; ?>

@@ -1,13 +1,24 @@
-<?php include 'header.php'; if ( $_GET['action'] == 'deletetcg' || !isset($_GET['id']) || $_GET['id'] == '' ) { 
+<?php include 'header.php'; if ( $_GET['action'] == 'deletetcg' || !isset($_GET['id']) || $_GET['id'] == '' ) { ?>
 
-?>
-           
-<h1>Manage TCGs</h1>
-<p>Please select a TCG to manage from the left dropdown menu, or add a new TCG by clicking on the "+" icon. Your TCGs can also be managed from the <a href="index.php">dashboard</a>.</p>
+<div class="content col-12 col-sm-12 col-lg-12">
 
-<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
+	<h1>Manage TCGs</h1>
+	<p>Please select a TCG to manage from the left dropdown menu, or add a new TCG by clicking on the "+" icon. Your TCGs can also be managed from the <a href="index.php">dashboard</a>.</p>
 
+	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<strong>Error!</strong> <?php echo $msg; ?>
+	</div>
+	<?php } } ?>
+	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
+
+</div>
 
 <?php } else if ( $_GET['id'] != '' && $_GET['action'] !== 'deletetcg' ) { 
 	
@@ -142,70 +153,106 @@
 		$numrows = $database->num_rows("SELECT * FROM `additional` WHERE `tcg`='$id'");
 	
 	?>
-		
-		<h1>TCG Settings: <?php echo $tcgname; ?></h1>
-		
-		<br />
-		
-		<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-		<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
 	
-		<form action="manage.php?id=<?php echo $tcginfo['id']; ?>" method="post">
-		<table class="style1" width="100%" align="center" cellpadding="5" cellspacing="5">
-			<tr>
-				<td class="top" colspan="2">Settings</td>
-			</tr><tr class="light">
-				<td width="200"><strong>TCG Name</strong></td>
-				<td><input name="name" type="text" id="name" value="<?php echo $tcginfo['name']; ?>" size="50" /></td>
-			</tr><tr class="xlight">
-				<td width="200"><strong>TCG URL</strong></td>
-				<td><input name="url" type="text" id="url" value="<?php echo $tcginfo['url']; ?>" size="50" /></td>
-			</tr><tr class="light">
-				<td width="200"><strong>Cards Directory URL</strong></td>
-				<td><input name="cardsurl" type="text" id="cardsurl" value="<?php echo $tcginfo['cardsurl']; ?>" size="50" /></td>
-			</tr><tr class="xlight">
-				<td width="200"><strong>Cards Path</strong></td>
-				<td><input name="cardspath" type="text" id="cardspath" value="<?php echo $tcginfo['cardspath']; ?>" size="50" /></td>
-			</tr><tr class="light">
-				<td width="200"><strong>Image Format</strong></td>
-				<td><input name="format" type="text" id="format" value="<?php echo $tcginfo['format']; ?>" size="10" /></td>
-			</tr><tr class="xlight">
-				<td width="200"><strong>Default Upload URL</strong></td>
-				<td><input name="defaultauto" type="text" id="defaultauto" value="<?php echo $tcginfo['defaultauto']; ?>" size="50" /></td>
-			</tr><tr class="light">
-				<td width="200"><strong>Auto Upload</strong></td>
-				<td><label><input name="autoupload" type="radio" value="1" <?php if ( $tcginfo['autoupload'] == 1 ) {  echo 'checked="checked"'; } ?> />Enable</label> <label><input name="autoupload" type="radio" value="0" <?php if ( $tcginfo['autoupload'] == 0 ) {  echo 'checked="checked"'; } ?> /> Disable</label></td>
-			</tr><tr class="xlight">
-				<td width="200"><strong>Status</strong></td>
-				<td><select name="status" id="status">
-				  <option value="active" <?php if ( $tcginfo['status'] == 'active' ) {  echo 'selected="selected"'; } ?>>Active</option>
-				  <option value="hiatus" <?php if ( $tcginfo['status'] == 'hiatus' ) {  echo 'selected="selected"'; } ?>>Hiatus</option>
-				  <option value="inactive" <?php if ( $tcginfo['status'] == 'inactive' ) {  echo 'selected="selected"'; } ?>>Inactive</option>
-				</select></td>
-			</tr><tr class="light">
-				<td width="200"><strong>Last Updated</strong></td>
-				<td><input name="lastupdated" type="text" id="lastupdated" value="<?php echo $tcginfo['lastupdated']; ?>" size="50" /></td>
-			</tr><tr>
-				<td class="top" colspan="2">Additional Fields</td>
-			</tr>
-			<?php $i = 0; while ( $row = mysqli_fetch_array($result) ) { $i++; if ( $i % 2 == 0 ) { $class = 'xlight'; } else { $class = 'light'; } ?>
-			<tr class="<?php echo $class; ?>">
-				<td width="200"><strong><?php echo $row['name']; ?></strong></td>
-			  <td><input name="<?php echo $row['name']; ?>_add" type="text" id="<?php echo $row['name']; ?>_add" value="<?php echo $row['value']; ?>" size="50" /> <input name="<?php echo $row['name']; ?>_eu" type="checkbox" id="<?php echo $row['name']; ?>_eu" value="1" <?php if ( $row['easyupdate'] == 1 ) { echo 'checked'; } ?>> <a href="manage.php?id=<?php echo $id; ?>&action=delete&field=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this field? The contents will be lost completely.'); return go;"><img src="images/delete.gif" alt="delete" /></a></td>
-			</tr>
-			<?php } ?>
-			
-			<?php $i++; if ( $i % 2 == 0 ) { $class = 'xlight'; } else { $class = 'light'; } ?>
-			<tr class="<?php echo $class; ?>">
-				<td width="200">+ <input name="newfield" type="text" id="newfield" value="new field" onfocus="if (this.value=='new field') this.value='';" onblur="if (this.value=='') this.value='new field';"></td>
-			  <td><input name="newvalue" type="text" id="newvalue" value="value" size="50" onfocus="if (this.value=='value') this.value='';" onblur="if (this.value=='') this.value='value';" /> <input name="neweu" type="checkbox" id="neweu" value="1"></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="right" class="xdark"><input name="submit" type="submit" id="submit" value="Update This TCG" /> <input name="Reset" type="reset" id="submit" value="Reset Fields" /></td>
-			</tr>
-		</table>
+	<div class="content col-12 col-sm-12 col-lg-12">
+		
+		<h1>TCG Settings <small><?php echo $tcgname; ?></small></h1>
+		
+		<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Error!</strong> <?php echo $msg; ?>
+		</div>
+		<?php } } ?>
+		<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> <?php echo $msg; ?>
+			</div>
+		<?php } } ?>
+	
+		<form action="manage.php?id=<?php echo $tcginfo['id']; ?>" method="post" role="form">
+			<div class="row">
+				<div class="col-md-6">
+					<h2>TCG Settings</h2>
+					<div class="form-group">
+						<label for="name">TCG Name</label>
+						<input name="name" type="text" id="name" class="form-control" value="<?php echo $tcginfo['name']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="url">TCG URL</label>
+						<input name="url" type="url" id="url" class="form-control" value="<?php echo $tcginfo['url']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="cardsurl">Cards Directory URL</label>
+						<input name="cardsurl" type="url" id="cardsurl" class="form-control" value="<?php echo $tcginfo['cardsurl']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="cardspath">Cards Path</label>
+						<input name="cardspath" type="text" id="cardspath" class="form-control" value="<?php echo $tcginfo['cardspath']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="format">Image Format</label>
+						<input name="format" type="text" id="format" class="form-control" value="<?php echo $tcginfo['format']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="defaultauto">Default Upload URL</label>
+						<input name="defaultauto" type="text" id="defaultauto" class="form-control" value="<?php echo $tcginfo['defaultauto']; ?>">
+					</div>
+					<div class="form-group">
+						<label for="autoupload">Auto Upload</label>
+						<label class="radio-inline">
+							<input type="radio" name="autoupload" id="autoupload1" value="1" <?php if ( $tcginfo['autoupload'] == 1 ) {  echo 'checked="checked"'; } ?>> Enable
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="autoupload" id="autoupload2" value="0" <?php if ( $tcginfo['autoupload'] == 0 ) {  echo 'checked="checked"'; } ?>> Disable
+						</label>
+					</div>
+					<div class="form-group">
+						<label for="status">Status</label>
+						<select name="status" id="status" class="form-control">
+							<option value="active" <?php if ( $tcginfo['status'] == 'active' ) {  echo 'selected'; } ?>>Active</option>
+							<option value="hiatus" <?php if ( $tcginfo['status'] == 'hiatus' ) {  echo 'selected'; } ?>>Hiatus</option>
+							<option value="inactive" <?php if ( $tcginfo['status'] == 'inactive' ) {  echo 'selected'; } ?>>Inactive</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="lastupdated">Last Updated</label>
+						<input name="lastupdated" type="date" id="lastupdated" class="form-control" value="<?php echo $tcginfo['lastupdated']; ?>">
+					</div>
+					<p><a href="index.php?id=<?php echo $id; ?>&action=deletetcg" onclick="go=confirm('Are you sure that you want to permanently delete this TCG? All data related to the TCG will be lost.'); return go;" class="text-danger"><i class="fa fa-times"></i> &nbsp; Delete This TCG</a></p>
+				</div>
+				<div class="col-md-6">
+					<h2>Additional Fields</h2>
+					<?php if ( $numrows === 0 ) { ?>
+						<p class="text-info">You haven't created any additional fields!</p>
+					<?php } else { while ( $row = mysqli_fetch_array($result) ) { ?>
+					<div class="form-group">
+						<input name="<?php echo $row['name']; ?>_eu" type="checkbox" id="<?php echo $row['name']; ?>_eu" value="1" <?php if ( $row['easyupdate'] == 1 ) { echo 'checked'; } ?> data-toggle="tooltip" data-placement="top" title="Show this field in the Easy Updater">
+						&nbsp;
+						<label for="<?php echo $row['name']; ?>_add"><?php echo $row['name']; ?></label>
+						<a href="manage.php?id=<?php echo $id; ?>&action=delete&field=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this field? The contents will be lost completely.'); return go;" data-toggle="tooltip" data-placement="top" title="Delete this field"><i class="fa fa-times-circle text-danger"></i></a>
+						<textarea name="<?php echo $row['name']; ?>_add" id="<?php echo $row['name']; ?>_add" class="form-control" rows="1"><?php echo $row['value']; ?></textarea>
+					</div>
+					<hr>
+					<?php } } ?>
+					<h2>Add a New Field</h2>
+					<div class="form-group">
+						<input name="newfield" type="text" id="newfield" class="form-control" placeholder="New Field Name">
+					</div>
+					<div class="form-group">
+						<textarea name="newvalue" id="newvalue" class="form-control" rows="1" placeholder="New Field Value"></textarea>
+					</div>
+					<div class="checkbox">
+					  <label>
+						<input name="neweu" type="checkbox" id="neweu" value="1">
+						Show this field in the Easy Updater
+					  </label>
+					</div>
+				</div>
+			</div>
+			<button name="submit" type="submit" id="submit" class="btn btn-primary btn-block">Update This TCG</button>
 		</form>
 		
-		<p><a href="index.php?id=<?php echo $id; ?>&action=deletetcg" onclick="go=confirm('Are you sure that you want to permanently delete this TCG? All data related to the TCG will be lost.'); return go;">&raquo; Remove This TCG</a></p>
-			
+</div>
 <?php } } include 'footer.php'; ?>

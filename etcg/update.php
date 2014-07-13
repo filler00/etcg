@@ -2,7 +2,7 @@
 
 if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
            
-	echo '<h1>Easy Updater</h1> <br />';
+	echo '<div class="content col-12 col-sm-12 col-lg-12"><h1>Easy Updater</h1> <br />';
 	
 	$database = new Database;
 	$result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
@@ -16,6 +16,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 	else {
 		echo 'You haven\'t set up any TCGs yet.';
 	}
+	echo '</div>';
 
 
 } else if ( $_GET['id'] != '' ) {
@@ -218,82 +219,82 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 		
 		?>
 		
-		<script type="text/javascript">
-
-		function addElement() {
-		  var ni = document.getElementById('myDiv');
-		  var numi = document.getElementById('theValue');
-		  var num = (document.getElementById('theValue').value -1)+ 2;
-		  numi.value = num;
-		  var newdiv = document.createElement('div');
-		  var divIdName = 'my'+num+'Div';
-		  newdiv.setAttribute('id',divIdName);
-		  newdiv.innerHTML = '<br /> <input name="newcards[]" type="text" id="newcards[]" size="50"> = <select name="cardscat[]" id="cardscat[]"><?php foreach ( $categories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?></select>';
-		  ni.appendChild(newdiv);
-		}
+		<div class="content col-12 col-sm-12 col-lg-12">
 		
-		</script>
-		
-		<h1>Easy Updater</h1>
-        <p>Use the quick log to automatically insert a new log entry. You can also view and edit your full activity log manually at the bottom of the form. <em>All fields are optional</em>.</p>
-		
-		<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-		<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
-		       
-		<form action="" method="post">
-		<table align="center" cellpadding="5" cellspacing="5" class="style1">
-   	  <tr>
-				<td colspan="2" align="center" class="top">Quick Log</td>
-			</tr>
-			<tr>
-				<td>TCG: </td>
-				<td>
-					<strong><?php echo $tcginfo['name']; ?></strong>
-				</td>
-			</tr>
-			<tr class="xlight">
-				<td>New Log Entry: </td>
-				<td><input name="logentry" type="text" id="logentry" size="60"></td>
-			</tr>
-            <tr>
-				<td>Log Type: </td>
-				<td><select name="logtype" id="logtype">
-				  <option value="activity" selected>Activity</option>
-				  <option value="trade">Trade</option>
-			  </select></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center" class="top">New Cards <input type="hidden" value="0" id="theValue" /> <input name="newField" type="button" id="newField" value="+" onclick="addElement('easyupdate');"></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center">
-                    <input name="newcards[]" type="text" id="newcards[]" size="50"> = 
-                  	<select name="cardscat[]" id="cardscat[]">
-                        <?php foreach ( $categories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?>
-                    </select>
-                    <div id="myDiv"> </div>
-              </td>
-			</tr>
-            <?php if ( $database->num_rows("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`") > 0 ) { ?>
-            <tr>
-				<td colspan="2" align="center" class="top">Additional Fields</td>
-			</tr>
-            <?php $result = $database->query("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`"); while ( $row = mysqli_fetch_assoc($result) ) { ?>
-            <tr>
-           	  <td><?php echo $row['name'] ?>: </td>
-                <td><input name="<?php echo $row['name'] ?>_add" type="text" id="kk" value="<?php echo $row['value']; ?>" size="45"></td>
-            </tr>
-            <?php } } ?>
-            <tr>
-            	<td colspan="2" align="center" class="top">Activity Log</td>
-            </tr>
-            <tr>
-            	<td colspan="2" align="center"><textarea name="activitylog" cols="70" rows="5" id="activitylog"><?php echo $tcginfo['activitylog']; ?></textarea></td>
-            </tr>
-            <tr>
-            	<td colspan="2" align="right" class="xdark"><input name="update" type="submit" value="Update" id="update"> <input name="reset" type="reset" value="Reset Fields" id="reset"></td>
-            </tr>
-		</table>
-		</form>
+			<h1>Easy Updater</h1>
+			
+			<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+			<div class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<strong>Error!</strong> <?php echo $msg; ?>
+			</div>
+			<?php } } ?>
+			<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+				<div class="alert alert-success alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<strong>Success!</strong> <?php echo $msg; ?>
+				</div>
+			<?php } } ?>
+			
+			<form action="" method="post" role="form">
+				<div class="form-group">
+					<label for="tcgname">TCG</label>
+					<input name="tcgname" id="tcgname" class="form-control" type="text" placeholder="<?php echo $tcginfo['name']; ?>" disabled>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-9">
+							<label for="logentry">New Log Entry</label>
+							<input name="logentry" id="logentry" type="text" class="form-control" placeholder="Paste a new log entry here!">
+						</div>
+						<div class="col-xs-3">
+							<label for="logtype">Log Type</label>
+							<select name="logtype" id="logtype" class="form-control">
+								<option value="activity" selected>Activity</option>
+								<option value="trade">Trade</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<hr>
+				
+				<div class="form-group">	
+					<div class="clearfix">
+						<label>New Cards</label> <button type="button" class="btn btn-primary btn-xs pull-right btn-new-cards" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add another card category"><i class="fa fa-plus"></i></button>
+					</div>
+					<div class="row eu-new-cards">
+						<div class="col-xs-8">
+							<input name="newcards[]" id="newcards[]" type="text" class="form-control" placeholder="card01, card02, card03...">
+						</div>
+						<div class="col-xs-4">
+							<select name="cardscat[]" id="cardscat[]" class="form-control">
+								<?php foreach ( $categories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected'; } ?>><?php echo trim($category); ?></option><?php } ?>
+							</select>
+						</div>
+					</div>
+				</div>
+				
+				<?php if ( $database->num_rows("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`") > 0 ) { ?>
+				<hr>
+				<?php $result = $database->query("SELECT `name`, `value` FROM `additional` WHERE `tcg`='$id' AND `easyupdate`='1' ORDER BY `id`"); while ( $row = mysqli_fetch_assoc($result) ) { ?>
+				<div class="form-group">
+					<label for="<?php echo $row['name'] ?>_add"><?php echo $row['name'] ?></label>
+					<input name="<?php echo $row['name'] ?>_add" id="<?php echo $row['name'] ?>_add" type="text" class="form-control" value="<?php echo $row['value']; ?>">
+				</div>
+				<?php } } ?>
+				
+				<hr>
+				
+				<div class="form-group">
+					<label for="activitylog">Activity Log</label>
+					<textarea name="activitylog" id="activitylog" rows="8" class="form-control"><?php echo $tcginfo['activitylog']; ?></textarea>
+				</div>
+				
+				<button name="update" id="update" type="submit" class="btn btn-primary btn-block">Update</button>
+				
+			</form>
+			
+		</div>
 
 <?php } } include 'footer.php'; ?>

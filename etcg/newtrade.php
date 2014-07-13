@@ -96,55 +96,67 @@ if ( isset($_POST['newtrade']) ) {
 
 ?>
 
-<h1>New Pending Trade</h1>
-<p>Separate card names with commas. Select the <em>grab from categories</em> option to automatically remove trading cards from your collection. Low priority categories are searched first.</p>
-<?php if ( isset($_GET['id']) ) { ?><p>&laquo; <a href="trades.php?id=<?php echo intval($_GET['id']); ?>">Return to Trades</a></p><?php }?>
+<div class="content col-12 col-sm-12 col-lg-12">
 
-<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
+	<h1>New Pending Trade</h1>
+	<p>Separate card names with commas. Select the <em>grab from categories</em> option to automatically remove trading cards from your collection. Low priority categories are searched first.</p>
+	<?php if ( isset($_GET['id']) ) { ?><p>&laquo; <a href="trades.php?id=<?php echo intval($_GET['id']); ?>">Return to Trades</a></p>
+	<?php } else { ?><p>&laquo; <a href="trades.php">Return to Trades</a></p><?php } ?>
 
-<form action="" method="post">
-<table align="center" width="500" cellpadding="5" cellspacing="5">
-	<tr>
-    	<td align="right">TCG: </td>
-        <td>
-            <select name="tcg" id="tcg">
-            	<?php $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
+	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+	<div class="alert alert-danger alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<strong>Error!</strong> <?php echo $msg; ?>
+	</div>
+	<?php } } ?>
+	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
+	
+	<form role="form" action="" method="post">
+		<div class="form-group">
+			<label for="exampleInputEmail1">TCG</label>
+			<select name="tcg" id="tcg" class="form-control">
+				<?php $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
 				while ( $row = mysqli_fetch_assoc($result) ) { ?>
-                <option value="<?php echo $row['id']; ?>" <?php if ( isset($_GET['id']) && intval($_GET['id']) == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
-                <?php } ?>
-            </select>
-      </td>
-    </tr>
-    <tr>
-    	<td align="right">Trader: </td>
-        <td><input name="trader" type="text" id="trader" /></td>
-    </tr>
-    <tr>
-    	<td align="right">Email: </td>
-        <td><input name="email" type="text" id="email" /></td>
-  	</tr>
-    <tr>
-    	<td align="right">Trading Cards: </td>
-      <td><input name="giving" type="text" id="giving" size="50" /></td>
-  	</tr>
-    <tr>
-    	<td align="right">Receiving Cards: </td>
-      <td><input name="receiving" type="text" id="receiving" size="50" /> </td>
-    </tr>
-    <tr>
-    	<td align="right">Type: </td>
-      <td>
-          <select name="type" id="type">
-            <option value="outgoing" selected>Outgoing</option>
-            <option value="incoming">Incoming</option>
-          </select> 
-      </td>
-  	</tr>
-    <tr>
-    	<td colspan="2" align="right"><label>grab from categories: <input name="grab" type="checkbox" id="grab" value="1" checked></label> <input name="newtrade" type="submit" id="newtrade" value="Submit"></td>
-    </tr>
-</table>
-</form>
+				<option value="<?php echo $row['id']; ?>" <?php if ( isset($_GET['id']) && intval($_GET['id']) == $row['id'] ) { echo 'selected="selected"'; } ?>><?php echo $row['name']; ?></option>
+				<?php } ?>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="trader">Trader's Name</label>
+			<input type="text" class="form-control" id="trader" name="trader">
+		</div>
+		<div class="form-group">
+			<label for="email">Email Address</label>
+			<input type="email" class="form-control" id="email" name="email" placeholder="email@example.com">
+		</div>
+		<div class="form-group">
+			<label for="giving">Trading Cards</label>
+			<input type="text" class="form-control" id="giving" name="giving" placeholder="card01, card02, card03">
+		</div>
+		<div class="form-group">
+			<label for="receiving">Receiving Cards</label>
+			<input type="text" class="form-control" id="receiving" name="receiving" placeholder="card01, card02, card03">
+		</div>
+		<div class="form-group">
+			<label for="type">Type</label>
+			<select class="form-control" name="type" id="type">
+				<option value="outgoing" selected>Outgoing</option>
+				<option value="incoming">Incoming</option>
+			</select>
+		</div>
+		<div class="checkbox">
+			<label>
+				<input name="grab" type="checkbox" id="grab" value="1" checked> Grab from categories <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="eTCG will search for and remove the Trading Cards from your card categories (in order of Priority). NOTE: If eTCG can't find a card that you listed under Trading Cards, it will be removed from the trade."></i>
+			</label>
+		</div>
+		<button type="submit" class="btn btn-primary btn-block" name="newtrade" id="newtrade">Submit</button>
+	</form>
+
+</div><!--/span-->
 
 <?php include 'footer.php'; ?>

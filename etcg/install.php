@@ -57,6 +57,7 @@ if ( isset($_POST['install']) ) {
 		  `worth` int(11) NOT NULL,
 		  `auto` int(11) NOT NULL DEFAULT '0',
 		  `autourl` varchar(255) NOT NULL DEFAULT 'default',
+		  `format` varchar(8) NOT NULL DEFAULT 'default',
 		  `priority` int(11) NOT NULL DEFAULT '1',
 		  PRIMARY KEY (`id`)
 		)";
@@ -80,6 +81,7 @@ if ( isset($_POST['install']) ) {
 		  `group` int(11) NOT NULL DEFAULT '0',
 		  `auto` int(11) NOT NULL DEFAULT '0',
 		  `uploadurl` varchar(255) NOT NULL DEFAULT 'default',
+		  `format` varchar(8) NOT NULL DEFAULT 'default',
 		  `mastered` int(11) NOT NULL DEFAULT '0',
 		  `mastereddate` date NOT NULL,
 		  `badge` varchar(50) NOT NULL,

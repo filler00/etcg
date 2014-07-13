@@ -1,6 +1,8 @@
 <?php include 'header.php'; if ( !isset($_GET['id']) || $_GET['id'] == '' ) { ?>
-           
-<h1>Manage Cards</h1>
+
+<div class="content col-12 col-sm-12 col-lg-12">
+	<h1>Manage Cards</h1>
+</div>
 
 <?php } else if ( $_GET['id'] != '' ) { 
 	
@@ -128,68 +130,143 @@
 	
 	?>
     
-    <h1>Manage Cards: <?php echo $tcginfo['name']; ?></h1>
-	<p>Selecting the <strong>auto</strong> option will allow the auto upload system to automatically upload cards that are added to that category. The auto upload feature must be enabled in the TCG's settings as well for this to work. Deselect the auto checkbox to disable auto uploading for that category. Leave the <strong>auto url</strong> as <em>default</em> unless the Auto Upload URL for that category is different from the default defined in the TCG's settings.</p>
-	<ul>
-    	<li><strong>LOW PRIORITY</strong> <em>can be traded</em> via the trade system, checked first when moving cards to pending, and  checked last when moving cards to collecting.</li>
-        <li><strong>MEDIUM PRIORITY</strong> <em>can be traded</em>, checked second when moving cards to pending, checked second when moving cards to collecting.</li>
-        <li><strong>HIGH PRIORITY</strong> <em>can't be traded</em>, NOT checked when moving cards to pending, checked first when moving cards to collecting.</li>
-    </ul>
-	<p>&raquo; <a href="collecting.php?id=<?php echo $id; ?>">View Collecting</a> <br />&raquo; <a href="mastered.php?id=<?php echo $id; ?>">View Mastered</a></p>
-    
-    <br />
-    
-    <?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
-    
-    <form action="cards.php?id=<?php echo $id; ?>" method="post">
-	<p><strong>New Category</strong>: <input name="category" type="text" id="category" value="category name" onfocus="if (this.value=='category name') this.value='';" onblur="if (this.value=='') this.value='category name';"> 
-    <input name="worth" type="text" id="worth" value="worth" size="5" onfocus="if (this.value=='worth') this.value='';" onblur="if (this.value=='') this.value='worth';"> 
-	<input name="autourl" type="text" id="autourl" value="default">	
-	<input name="auto" type="checkbox" value="1" id="auto"> <input name="newcat" type="submit" value="Go" id="newcat"></p>
-    </form>
-        
-    <?php $result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$id' ORDER BY `category`");
-	while ( $row = mysqli_fetch_assoc($result) ) { ?>
+	<div class="content col-12 col-sm-12 col-lg-12">
 	
-    <br />
-	<form action="cards.php?id=<?php echo $id; ?>" method="post">
-        <input name="id" type="hidden" id="id" value="<?php echo $row['id']; ?>">
-		 <table class="style1" width="100%" align="center" cellpadding="5" cellspacing="5">
-            <tr>
-                <td class="top" colspan="4"><?php echo $row['category']; ?> <a href="cards.php?id=<?php echo $id; ?>&action=delete&cat=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this category? The contents will be lost completely.'); return go;"><img src="images/delete.gif" alt="delete" style="float:right;" /></a></td>
-            </tr><tr class="xlight">
-                <td width="200" colspan="3"><input name="category" type="text" id="category" value="<?php echo $row['category']; ?>" size="40"></td>
-                <td rowspan="4"><textarea name="cards" cols="75" rows="12" id="cards" style="font-size: 10px; font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;"><?php echo $row['cards']; ?></textarea></td>
-            </tr>
-            <tr class="xlight">
-              <td align="center">worth<br /> <input name="worth" type="text" id="worth" value="<?php echo $row['worth']; ?>" size="2"></td>
-              <td align="center">priority<br /> 
-              <select name="priority" id="priority">
-                <option value="1" <?php if ( $row['priority'] == 1 ) { echo 'selected="selected"'; } ?>>Low</option>
-                <option value="2" <?php if ( $row['priority'] == 2 ) { echo 'selected="selected"'; } ?>>Medium</option>
-                <option value="3" <?php if ( $row['priority'] == 3 ) { echo 'selected="selected"'; } ?>>High</option>
-              </select>
-              </td>
-              <td align="center"><label>auto<br /> <input name="auto" type="checkbox" id="auto" value="1" <?php if ( $row['auto'] == 1 ) { echo 'checked'; } ?>></label></td>
-            </tr>
-            <tr class="xlight">
-              <td colspan="3">auto url: 
-                <input name="autourl" type="text" id="autourl" value="<?php echo $row['autourl']; ?>" size="25"></td>
-            </tr>
-			<tr class="xlight">
-              <td colspan="3">format: 
-                <input name="format" type="text" id="format" value="<?php echo $row['format']; ?>" size="25"></td>
-            </tr>
-            <tr>
-            	<td colspan="4" align="right" class="xdark"><input name="update" type="submit" id="update" value="Update"> <input name="reset" type="reset" id="reset" value="Reset"></td>
-           </tr>
-         </table>
-	</form>
+		<h1>Manage Cards <small><?php echo $tcginfo['name']; ?></small></h1>
+		<p class="clearfix">
+			&raquo; <a href="collecting.php?id=<?php echo $id; ?>">View Collecting</a> &nbsp; 
+			&raquo; <a href="mastered.php?id=<?php echo $id; ?>">View Mastered</a>
+			<button class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#new-category-modal"><i class="fa fa-plus"></i> &nbsp; New Category</button>
+		</p>
+		
+		<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Error!</strong> <?php echo $msg; ?>
+		</div>
+		<?php } } ?>
+		<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+			<div class="alert alert-success alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<strong>Success!</strong> <?php echo $msg; ?>
+			</div>
+		<?php } } ?>
+		
+		<div class="modal fade" id="new-category-modal" tabindex="-1" role="dialog" aria-labelledby="new-category-label" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h2 class="modal-title" id="new-category-label">New Category</h2>
+					</div>
+					<div class="modal-body">
+						<form action="cards.php?id=<?php echo $id; ?>" method="post" role="form">
+						<div class="form-group">
+							<label for="category">Category Name</label>
+							<input name="category" id="category" type="text" class="form-control" placeholder="ie. 'keeping'">
+						</div>
+						<div class="form-group">
+							<label for="worth">Card Worth</label>
+							<input name="worth" id="worth" type="number" class="form-control" placeholder="ie. 1">
+						</div>
+						<div class="form-group">
+							<label for="autourl">Auto-Upload URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Auto-Upload URL defined in the TCG Settings"></i>
+							<input name="autourl" id="autourl" type="text" class="form-control" value="default">
+						</div>
+						<div class="form-group">
+							<div class="checkbox">
+								<label>
+									<input name="auto" id="auto" type="checkbox" value="1">
+									Enable Auto-Upload for this category
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button name="newcat" id="newcat" type="submit" class="btn btn-primary">Create Category</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel-group" id="cards-panel">	
+		
+		<?php $result = $database->query("SELECT * FROM `cards` WHERE `tcg`='$id' ORDER BY `category`");
+		while ( $row = mysqli_fetch_assoc($result) ) { ?>
+
+			<div class="panel panel-default">
+				<div class="panel-heading clearfix" data-toggle="collapse" data-target="#cat<?php echo $row['id']; ?>">
+					<i class="fa fa-th-large"></i> &nbsp; <?php echo $row['category']; ?>
+					<span class="pull-right"><i class="fa fa-chevron-down"></i></span>
+				</div>
+				<div id="cat<?php echo $row['id']; ?>" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form action="cards.php?id=<?php echo $id; ?>" method="post" role="form">
+							<input name="id" type="hidden" id="id" value="<?php echo $row['id']; ?>">
+							
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label for="category">Category Name</label>
+										<input type="text" class="form-control" id="category" name="category" placeholder="Category Name" value="<?php echo $row['category']; ?>">
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-xs-4">
+												<label for="worth">Worth</label>
+										<input type="number" class="form-control" id="worth" name="worth" value="<?php echo $row['worth']; ?>">
+											</div>
+											<div class="col-xs-4">
+												<label for="format">Format</label>
+												<input type="text" class="form-control" id="format" name="format" value="<?php echo $row['format']; ?>">
+											</div>
+											<div class="col-xs-4">
+												<label for="worth">Priority</label>
+												<select name="priority" id="priority" class="form-control">
+													<option value="1" <?php if ( $row['priority'] == 1 ) { echo 'selected'; } ?>>Low</option>
+													<option value="2" <?php if ( $row['priority'] == 2 ) { echo 'selected'; } ?>>Medium</option>
+													<option value="3" <?php if ( $row['priority'] == 3 ) { echo 'selected'; } ?>>High</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-xs-10">
+												<label for="autourl">Auto-Upload URL</label> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Leave as 'default' to use the Auto-Upload URL defined in the TCG Settings"></i>
+												<input type="text" class="form-control" id="autourl" name="autourl" value="<?php echo $row['autourl']; ?>">
+											</div>
+											<div class="col-xs-2">
+												<label for="auto" class="sr-only">Enable</label>
+												<input name="auto" type="checkbox" id="auto" value="1" <?php if ( $row['auto'] == 1 ) { echo 'checked'; } ?> data-toggle="tooltip" data-placement="top" title="Enable Auto-Upload" style="margin-top: 35px;">
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-8">
+									<div class="form-group">
+										<label for="cards">Cards</label>
+										<textarea name="cards" class="form-control" rows="9" id="cards"><?php echo $row['cards']; ?></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-footer clearfix">
+							<div class="btn-group pull-right">
+									<button name="update" id="update" type="submit" class="btn btn-sm btn-primary">Update Category</button>
+									<a class="btn btn-danger btn-sm" href="cards.php?id=<?php echo $id; ?>&action=delete&cat=<?php echo $row['id']; ?>" onclick="go=confirm('Are you sure that you want to permanently delete this category? The contents will be lost completely.'); return go;" data-toggle="tooltip" data-placement="top" title="Delete This Category"><i class="fa fa-times-circle"></i></a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
         
-<?php
-	}
-	
-?>
+		<?php } ?>
+		
+		</div>
+		
+	</div>
 
 <?php } include 'footer.php'; ?>

@@ -344,37 +344,52 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 
 } 
 
-$newcounter = 0; // initialize variable to count new field containers
 $counttrades = 0;
 ?>
 
-<script type="text/javascript">
+<div class="content col-12 col-sm-12 col-lg-12">
+	<div class="clearfix">
+		<h1 class="pull-left">Trades</h1>
+		
+		<div class="row pull-right trades-nav-controls">
+			<div class="col-xs-5">
+				<select class="form-control" id="trades-type-sel">
+					<option selected>All Trades</option>
+					<option>Incoming</option>
+					<option>Outgoing</option>
+				</select>
+			</div>
+			<div class="col-xs-5">
+				<select class="form-control" id="trades-tcg-sel">
+					<option <?php if ( !isset($_GET['id']) ) { echo 'selected'; }  ?>>All TCGs</option>
+					<?php $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
+					while ( $row = mysqli_fetch_assoc($result) ) {?>
+						<option data-tcg-id="<?php echo $row['id']; ?>" <?php if ( intval($_GET['id']) == $row['id'] ) { echo 'selected'; }  ?>><?php echo $row['name']; ?></option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="col-xs-1">
+				<a href="newtrade.php" type="button" class="btn btn-primary new-trade-btn"><i data-toggle="tooltip" data-placement="top" title="New Trade" class="fa fa-plus"></i></a>
+			</div>
+		</div>
+	</div>
+	
+	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?>
+		<div class="alert alert-danger alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Error!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
+	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?>
+		<div class="alert alert-success alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<strong>Success!</strong> <?php echo $msg; ?>
+		</div>
+	<?php } } ?>
 
-function addElement(newCounter,tradeType,menuOptions) {
-  var ni = document.getElementById('myDiv'+newCounter);
-  //var numi = document.getElementById('theValue');
-  //var num = (document.getElementById('theValue').value -1)+ 2;
-  //numi.value = num;
-  var newdiv = document.createElement('div');
-  var divIdName = 'myNewDiv' + newCounter;
-  newdiv.setAttribute('id',divIdName);
-  if ( tradeType == 'trading' ) {
-  	newdiv.innerHTML = '<input name="newtrading[]" type="text" id="newtrading[]" value="new field" size="40" style="font-size:10px;" onFocus="if (this.value==\'new field\') this.value=\'\';" onBlur="if (this.value==\'\') this.value=\'new field\';" /> » <select name="newtradingcat[]" id="newtradingcat[]">' +menuOptions+ '</select>';
-  } else {
-  	newdiv.innerHTML = '<input name="newreceiving[]" type="text" id="newreceiving[]" value="new field" size="40" style="font-size:10px;" onFocus="if (this.value==\'new field\') this.value=\'\';" onBlur="if (this.value==\'\') this.value=\'new field\';" /> » <select name="newreceivingcat[]" id="newreceivingcat[]">' +menuOptions+ '</select>';
-  }
-  ni.appendChild(newdiv);
-  console.log(menuOptions);
-}
+	<div class="panel-group" id="trades-panel">
 
-var menuOptions = new Array();
-</script>
-
-	<?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><div class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><?php } } ?>
-	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><div class="success"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><?php } } ?>
-
-<?php if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`='".intval($_GET['id'])."'") != 0 ) { $result = $database->query("SELECT * FROM `tcgs` WHERE `id`='".intval($_GET['id'])."'"); }
-else { $result = $database->query("SELECT * FROM `tcgs` WHERE `status` = 'active' ORDER BY `id`"); }
+<?php $result = $database->query("SELECT * FROM `tcgs` ORDER BY `name`");
 while ( $tcginfo = mysqli_fetch_assoc($result) ) {
 	
 	unset($categories);
@@ -388,96 +403,119 @@ while ( $tcginfo = mysqli_fetch_assoc($result) ) {
 	sort($categories);
 	$gcategories = $categories;
 	array_unshift($categories,'collecting');
-	$rcategories = $categories;
-	
-	$tradecount = $database->num_rows("SELECT * FROM `trades` WHERE `tcg` = '".$tcginfo['id']."'");
-	if ( $tradecount > 0 ) {
-	
-		echo '<h1>'.$tcginfo['name'].'</h1>';
-		echo '<br /><div id="tradesNav"><div id="'.$tcginfo['id'].'incomingTab" onclick="navTrades(\''.$tcginfo['id'].'incoming\',\''.$tcginfo['id'].'outgoing\')" class="tradesNavSel">Inbox ('.$database->num_rows("SELECT * FROM `trades` WHERE `tcg` = '".$tcginfo['id']."' AND `type` = 'incoming'").')</div><div id="'.$tcginfo['id'].'outgoingTab" onclick="navTrades(\''.$tcginfo['id'].'outgoing\',\''.$tcginfo['id'].'incoming\')" class="tradesNavDesel">Outbox ('.$database->num_rows("SELECT * FROM `trades` WHERE `tcg` = '".$tcginfo['id']."' AND `type` = 'outgoing'").')</div><a class="tradesNavDesel" href="newtrade.php?id='.$tcginfo['id'].'">New Trade</a></div>';
-		echo '<div id="tradesContainer">';
+	$rcategories = $categories; ?>
 		
-		$tradingcateg = array(outgoing, incoming);
-		foreach ( $tradingcateg as $tcateg ) {
+		<?php			
+		$resultt = $database->query("SELECT * FROM `trades` WHERE `tcg`='".$tcginfo['id']."' ORDER BY `date` DESC");
+		while ( $row = mysqli_fetch_assoc($resultt) ) { ?>
 			
-			if ( $tcateg == 'incoming' ) { $displayNone = ''; }
-			else { $displayNone = 'style="display:none;"'; }
+			<?php // Build menu options for new category select
+						$menuoptions = "";
+						foreach ( $gcategories as $category ) {
+							$menuoptions .= '<option value="'.trim($category).'">'.trim($category).'</option>';
+						}
+						$menuoptions = str_replace('"','\"',$menuoptions);
+			?>
 			
-			echo '<div id="'.$tcginfo['id'].''.$tcateg.'" '.$displayNone.'>';
-			
-			$resultt = $database->query("SELECT * FROM `trades` WHERE `tcg`='".$tcginfo['id']."' AND `type` = '".$tcateg."' ORDER BY `date` DESC");
-			while ( $row = mysqli_fetch_assoc($resultt) ) { ?>
-				
-				<?php // Build menu options for new category select
-							$menuoptions = "";
-							foreach ( $gcategories as $category ) {
-								$menuoptions .= '<option value="'.trim($category).'">'.trim($category).'</option>';
-							}
-							$menuoptions = str_replace('"','\"',$menuoptions);
-				?>
-				
 				<form action="" method="post">
 				<input name="id" type="hidden" id="id" value="<?php echo $row['id'] ?>" />
 				<input name="tcgid" type="hidden" id="tcgid" value="<?php echo $row['tcg'] ?>" />
 				<input name="trader" type="hidden" id="trader" value="<?php echo $row['trader'] ?>" />
 				<input name="email" type="hidden" id="email" value="<?php echo $row['email'] ?>" />
-				<table align="center" width="100%" cellpadding="5" cellspacing="0" class="style1" id="trade<?php echo $counttrades; ?>">
-					<tr class="linked" id="collapseTrigger<?php echo $counttrades; ?>" onclick="collapseTrades('trade<?php echo $counttrades; ?>','collapseTrigger<?php echo $counttrades; ?>');">
-						<td class="top" colspan="2"><em><?php echo date('F d, Y', strtotime($row['date'])); ?></em> | Sent <?php if ( $tcateg == 'outgoing' ) { echo 'to'; } else { echo 'from'; } ?> <strong><?php echo $row['trader']; ?></strong> <?php if ( isset($row['email']) && $row['email'] !== '' ) { echo '(<a href="mailto:'.$row['email'].'">'.$row['email'].'</a>)'; } ?></td>
-					</tr>
-					<tr class="collapse">
-						<script type="text/javascript">menuOptions[<?php echo $counttrades; ?>] = "<?php echo $menuoptions; ?>";</script>
-						<?php $newcounter++; ?>
-						<td class="xdark">Trading Cards <img src="images/newfield.png" class="newfieldBtn" onclick="addElement(<?php echo $newcounter; ?>,'trading',menuOptions[<?php echo $counttrades; ?>]);"> </td>
-						<?php $newcounter++; ?>
-						<td class="xdark">Receiving Cards <img src="images/newfield.png" class="newfieldBtn" onclick="addElement(<?php echo $newcounter; ?>,'receiving',menuOptions[<?php echo $counttrades; ?>]);"> </td>
-					</tr>
-					<tr class="collapse">
-						<td valign="top">
-							<?php $tradingcards = explode(';',$row['giving']); $categ = explode(',',$row['givingcat']); $i = 0;
-							foreach ($tradingcards as $cardgroup) { ?>
-							<input name="tradingcards[]" type="text" id="tradingcards[]" value="<?php echo trim($cardgroup); ?>" size="40" style="font-size:10px;" /> » 
-						  	<select name="tradingcat[]" id="tradingcat[]">
-								<?php foreach ( $gcategories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?>
-							</select>
-							<?php echo '<br /><br />'; $i++; } ?>
-							<div id="myDiv<?php echo $newcounter-1; ?>"> </div>
-						</td>
-						<td valign="top">
-							<?php $receivingcards = explode(';',$row['receiving']); $categ = explode(',',$row['receivingcat']); $i = 0;
-							foreach ($receivingcards as $cardgroup) { ?>
-							<input name="receivingcards[]" type="text" id="receivingcards[]" value="<?php echo trim($cardgroup); ?>" size="40" style="font-size:10px;" /> » 
-						  <select name="receivingcat[]" id="receivingcat[]">
-                          		<option value="">--</option>
-								<?php foreach ( $rcategories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?>
-							</select>
-							<?php echo '<br /><br />'; $i++; } ?>
-							<div id="myDiv<?php echo $newcounter; ?>"> </div>
-						</td>
-					</tr>
-					<tr class="collapse">
-						<td colspan="2" class="light" align="right"><?php if ( $row['email'] !== '' ) { ?><label>email cards: <input name="emailcards" type="checkbox" id="emailcards" value="1" <?php if ( $row['emailcards'] === '1' ) { echo 'checked="checked"'; } ?> /></label> <?php } ?>
-						<input name="update" type="submit" id="update" value="Update" /> <input name="complete" type="submit" id="complete" value="Complete Trade" /> <input name="remove" type="submit" id="remove" value="Remove Trade" /></td>
-					</tr>
-				</table>
-				</form>
+				<div class="panel panel-default" data-trade-type="<?php echo $row['type'] ?>" data-trade-tcg="<?php echo $tcginfo['name'] ?>">
+					<div class="panel-heading" data-toggle="collapse" data-parent="#trades-panel" data-target="#collapse<?php echo $counttrades; ?>"> <!-- Trade Head -->
+						<span class="panel-title clearfix">
+							 <i class="fa fa-envelope"></i> &nbsp; 
+							 <span class="label label-primary"><?php echo $tcginfo['name'] ?></span> &nbsp; 
+							 <strong><em><?php echo date('F d, Y', strtotime($row['date'])); ?></em></strong>
+							 <span class="pull-right">
+								Sent <?php if ( $row['type'] == 'outgoing' ) { echo 'to'; } else { echo 'from'; } ?> <a href="mailto:<?php echo $row['email']; ?>"><strong><?php echo $row['trader']; ?></strong></a> &nbsp; 
+								<i class="fa fa-chevron-down"></i>
+							</span>
+						</span>
+					</div>
+					<div id="collapse<?php echo $counttrades; ?>" class="panel-collapse collapse"> <!-- Trade Body -->
+						<div class="panel-body">
+							<table class="table">
+								<thead>
+									<tr>
+										<th class="clearfix">
+											<i class="fa fa-arrow-circle-o-up"></i> Trading Cards
+											<button type="button" class="btn btn-primary btn-xs pull-right btn-new-trading" data-toggle="tooltip" data-placement="top" title="Add another category"><i class="fa fa-plus"></i></button>
+										</th>
+										<th class="clearfix">
+											<i class="fa fa-arrow-circle-o-down"></i> Receiving Cards
+											<button type="button" class="btn btn-primary btn-xs pull-right btn-new-receiving" data-toggle="tooltip" data-placement="top" title="Add another category"><i class="fa fa-plus"></i></button>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="td-trading-cats"> <!-- Trading Card Categories -->
+											<?php $tradingcards = explode(';',$row['giving']); $categ = explode(',',$row['givingcat']); $i = 0;
+											foreach ($tradingcards as $cardgroup) { ?>	
+												<div class="clearfix">
+													<div class="col-xs-8">
+														<input name="tradingcards[]" id="tradingcards[]" type="text" class="form-control" placeholder="card01, card02, card03" value="<?php echo trim($cardgroup); ?>">
+													</div>
+													<div class="col-xs-4">
+														<select class="form-control" name="tradingcat[]" id="tradingcat[]">
+															<?php foreach ( $gcategories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?>
+														</select>
+													</div>
+												</div>
+											<?php $i++; } ?>
+										</td>
+										<td class="td-receiving-cats"> <!-- Receiving Card Categories -->
+											<?php $receivingcards = explode(';',$row['receiving']); $categ = explode(',',$row['receivingcat']); $i = 0;
+											foreach ($receivingcards as $cardgroup) { ?>		
+												<div class="clearfix">
+													<div class="col-xs-8">
+														<input name="receivingcards[]" id="receivingcards[]" type="text" class="form-control" placeholder="card01, card02, card03" value="<?php echo trim($cardgroup); ?>">
+													</div>
+													<div class="col-xs-4">
+														<select class="form-control" name="receivingcat[]" id="receivingcat[]">
+															<option value="">--</option>
+															<?php foreach ( $rcategories as $category ) { ?><option value="<?php echo trim($category); ?>" <?php if ( trim($categ[$i]) == trim($category) ) { echo 'selected="selected"'; } ?>><?php echo trim($category); ?></option><?php } ?>
+														</select>
+													</div>
+												</div>
+											<?php $i++; } ?>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="panel-footer clearfix"> <!-- Trade Settings & Controls -->
+							<?php if ( $row['email'] !== '' ) { ?>
+								<div class="checkbox-inline" data-toggle="tooltip" data-placement="top" title="Send an email with a trade summary and cards when the trade is completed.">
+									<label>
+										<input type="checkbox" name="emailcards" id="emailcards" value="1" <?php if ( $row['emailcards'] === '1' ) { echo 'checked="checked"'; } ?>>
+										<i class="fa fa-share"></i> Email Cards
+									</label>
+								</div>
+							<?php } ?>
+							<div class="btn-group pull-right">
+								<!--<button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="Edit Trade Settings"><i class="fa fa-cogs"></i></button>-->
+								<button name="update" id="update" type="submit" class="btn btn-primary btn-sm">Update Trade</button>
+								<button name="complete" id="complete" type="submit" class="btn btn-success btn-sm">Complete Trade</button>
+								<button name="remove" id="remove" type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove"><i class="fa fa-times"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
 				
-	<?php
+<?php	
 			$counttrades++;
-			}
-
-			echo '</div>';
 		
 		}
-
-		echo '</div><br /><br />';
-		
-	}
-	
-	else { echo '<h1>'.$tcginfo['name'].'</h1>'; echo '<p>&raquo; <a href="newtrade.php?id='.$tcginfo['id'].'">New Pending Trade</a></p>'; echo '<p>There are currently no pending trades for this TCG.</p>';  }
 
 }
 
 ?>
+	</div>
+
+</div>
 
 <?php include 'footer.php'; ?>
