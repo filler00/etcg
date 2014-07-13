@@ -45,7 +45,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>additional</em>. ".mysqli_error().""; }
 		
 		// Create Cards Table
@@ -62,7 +62,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>cards</em>. ".mysqli_error().""; }
 		
 		// Create Collecting Table
@@ -88,7 +88,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>collecting</em>. ".mysqli_error().""; }
 		
 		// Create Settings Table
@@ -99,7 +99,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>settings</em>. ".mysqli_error().""; }
 		
 		// Create TCGs Table
@@ -121,7 +121,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>tcgs</em>. ".mysqli_error().""; }
 		
 		// Create Trades Table
@@ -140,7 +140,7 @@ if ( isset($_POST['install']) ) {
 		  PRIMARY KEY (`id`)
 		)";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not create table <em>trades</em>. ".mysqli_error().""; }
 		
 		// Add Settings
@@ -156,7 +156,7 @@ if ( isset($_POST['install']) ) {
 			('dateformat', '$dateformat'),
 			('dateheaderformat', '$dateheaderformat')";
 		
-		$result = mysqli_query($query);
+		$result = $database->query($query);
 		if ( !$result ) { $error[] = "Could not populate table <em>settings</em>. ".mysqli_error().""; }
 		
 		if ( !isset($error) ) { $success[] = "Installation has completed. <em>Please delete this file</em>, then feel free to <a href=\"index.php\">log in</a>!"; }
@@ -181,7 +181,7 @@ if ( isset($_POST['install']) ) {
 
 	<h1>Easy TCG FM Installation</h1>
     <p>Fill out the form completely and click <em>Install</em> ONCE. It may take a moment to populate the database, so wait for it. <strong>DELETE this file (install.php) once installation is complete.</strong></p>
-	<p><strong>**</strong> If you have not inserted your database settings into your class_lib.php file, you must do so FIRST.</p>
+	<p><strong>**</strong> If you have not inserted your database settings into your config.php file, you must do so FIRST.</p>
     
     <?php if ( isset($error) ) { foreach ( $error as $msg ) {  ?><br /><div align="center" class="errors"><strong>ERROR!</strong> <?php echo $msg; ?></div><br /><?php } } ?>
 	<?php if ( isset($success) ) { foreach ( $success as $msg ) { ?><br /><div align="center" class="xlight"><strong>SUCCESS!</strong> <?php echo $msg; ?></div><br /><?php } } ?>
