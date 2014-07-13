@@ -169,7 +169,7 @@
 						
 						$i = 0;
 						foreach ( $cards as $card ) {
-							if ( preg_match('/^'.$deck.'[0-9]{1,5}$/i', $card) && strpos($newcards,$card) === false ) { 
+							if ( preg_match("/^(".$deck.")([0-9]{2})$/i", $card) && strpos($newcards,$card) === false ) { 
 								if ( $newcards == '' ) { $newcards = $card; } else { $newcards .= ', '.$card.''; } 
 								$cards[$i] = '';
 							}
