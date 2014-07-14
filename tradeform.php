@@ -28,7 +28,7 @@
 		else if ( $hiatustrading == 1 ) { $result = $database->query("SELECT `id`,`name` FROM `tcgs` WHERE `status`='active' OR `status`='hiatus' ORDER BY `name`"); }
 		else if ( $inactivetrading == 1 ) { $result = $database->query("SELECT `id`,`name` FROM `tcgs` WHERE `status`='active' OR `status`='inactive' ORDER BY `name`"); }
 		
-		while ( $row = mysql_fetch_assoc($result) ) {
+		while ( $row = mysqli_fetch_assoc($result) ) {
 	    	echo '<option value="'.$row['id'].'">'.$row['name'].'</option>';
         } ?>
       </select></td>
