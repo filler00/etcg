@@ -36,16 +36,16 @@ $('#trades-tcg-sel, #trades-type-sel').change(function(){
 	$('.collapse').collapse('hide');
 	
 	if ( $('#trades-tcg-sel').val() != "All TCGs" ) {
-		$('.new-trade-btn').attr('href','newtrade.php?id=' + $(this).find('option:selected').attr('data-tcg-id'));
+		$('.new-trade-btn').attr('href','newtrade.php?id=' + $('#trades-tcg-sel').find('option:selected').attr('data-tcg-id'));
 		
 		if ( $('#trades-type-sel').val() == "All Trades" ) {
-			$('.panel[data-trade-tcg=' + $('#trades-tcg-sel').val() + ']').show(); $('.panel:not([data-trade-tcg=' + $('#trades-tcg-sel').val() + '])').hide();
+			$('.panel[data-trade-tcg="' + $('#trades-tcg-sel').val() + '"]').show(); $('.panel:not([data-trade-tcg="' + $('#trades-tcg-sel').val() + '"])').hide();
 		}
 		else if ( $('#trades-type-sel').val() == "Incoming" ) {
-			$('.panel[data-trade-tcg=' + $('#trades-tcg-sel').val() + '][data-trade-type="incoming"]').show(); $('.panel:not([data-trade-tcg=' + $('#trades-tcg-sel').val() + '][data-trade-type="incoming"])').hide();
+			$('.panel[data-trade-tcg="' + $('#trades-tcg-sel').val() + '"][data-trade-type="incoming"]').show(); $('.panel:not([data-trade-tcg="' + $('#trades-tcg-sel').val() + '"][data-trade-type="incoming"])').hide();
 		}
 		else if ( $('#trades-type-sel').val() == "Outgoing" ) {
-			$('.panel[data-trade-tcg=' + $('#trades-tcg-sel').val() + '][data-trade-type="outgoing"]').show(); $('.panel:not([data-trade-tcg=' + $('#trades-tcg-sel').val() + '][data-trade-type="outgoing"])').hide();
+			$('.panel[data-trade-tcg="' + $('#trades-tcg-sel').val() + '"][data-trade-type="outgoing"]').show(); $('.panel:not([data-trade-tcg="' + $('#trades-tcg-sel').val() + '"][data-trade-type="outgoing"])').hide();
 		}
 	}
 	else if ( $('#trades-tcg-sel').val() == "All TCGs" ) {
