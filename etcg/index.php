@@ -93,7 +93,7 @@ $releases = json_decode($response, true);
 					while ( $row = mysqli_fetch_assoc($result) ) { $i++; ?>
 						<tr <?php if ( $row['status'] == 'inactive' ) { echo 'class="danger"'; } else if ( $row['status'] == 'hiatus' ) { echo 'class="warning"'; } ?>>
 							<td><strong><a href="cards.php?id=<?php echo $row['id']; ?>"><?php echo $row['name']; ?></a></strong></td>
-							<td><a href="'.$row['url'].'" target="_blank"><?php echo $row['url']; ?></a></td>
+							<td><a href="<?php echo $row['url']; ?>" target="_blank"><?php echo $row['url']; ?></a></td>
 							<td><em><?php echo $row['status']; ?></em></td>
 							<td><?php echo date('F j, Y', strtotime($row['lastupdated'])); ?></td>
 						</tr>
