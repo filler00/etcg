@@ -15,6 +15,7 @@ if ( isset($_GET['id']) && $database->num_rows("SELECT * FROM `tcgs` WHERE `id`=
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="">
 		<meta name="author" content="">
+		<meta name="robots" content="noindex, nofollow, noarchive">
 		<link rel="icon" href="../../favicon.ico">
 
 		<title>EasyTCG FM | Tradepost Management</title>
