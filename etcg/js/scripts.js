@@ -76,6 +76,7 @@ $('.btn-new-trading, .btn-new-receiving').on('click', function(){
 	}
 	var newFields = tdContainer.find('div.clearfix').eq(0).clone();
 	newFields.find('input').attr('value',null);
+	newFields.find('input').val(null);
 	newFields.find('select option').attr('selected',null);
 	newFields.appendTo(tdContainer);
 });
