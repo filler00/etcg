@@ -34,7 +34,7 @@ class Database {
 	function connect () {
 	
 		$link = @mysqli_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD, Config::DB_DATABASE )
-		or die( "Couldn't connect to MYSQL: ".mysqli_error() );
+		or die( "Couldn't connect to MYSQL: ".mysqli_error($link) );
 		
 		return $link;
 		
@@ -56,7 +56,7 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$assoc = mysqli_fetch_assoc($result);
 		
@@ -70,7 +70,7 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$array = mysqli_fetch_array($result);
 		
@@ -84,7 +84,7 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$num_rows = mysqli_num_rows($result);
 		
