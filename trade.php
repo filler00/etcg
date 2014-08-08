@@ -17,12 +17,12 @@
 		
 		$wants = explode(',',$wants);
 		foreach ( $wants as $card ) {
-			if ( !preg_match("/[a-z0-9_-]+[0-9]{2,4}/i", $card) ) { $validcards = false; }
+			if ( !preg_match("/[a-z0-9_-]/i", $card) ) { $validcards = false; }
 		}
 		
 		$offer = explode(',',$offer);
 		foreach ( $offer as $card ) {
-			if ( !preg_match("/[a-z0-9_-]+[0-9]{2,4}/i", $card) ) { $validcards = false; }
+			if ( !preg_match("/[a-z0-9_-]/i", $card) ) { $validcards = false; }
 		}
 		
 		array_walk($wants, 'trim_value');
