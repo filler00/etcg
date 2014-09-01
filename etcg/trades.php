@@ -289,7 +289,7 @@ if ( isset($_POST['update']) || isset($_POST['complete']) ) {
 			$dateheaderformat = $dateheaderformat['value'];
 			
 			$date = date("$dateformat");
-			$logdate = str_replace('[DATE]',$date,$dateheaderformat);
+			$logdate = $sanitize->for_db(str_replace('[DATE]',$date,$dateheaderformat));
 			
 			$oldlog = $sanitize->for_db($tcginfo['tradelog']);
 				
