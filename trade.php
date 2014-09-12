@@ -44,7 +44,7 @@
 						
 						$i = 0;
 						foreach ( $cards as $card ) {
-							if ( preg_match("/$givingcard/i", $card) && !isset($cardfound) ) { 
+							if ( preg_match("/^$givingcard$/i", $card) && !isset($cardfound) ) { 
 								$foundcards[] = $card;
 								$cardfound = true;
 							}
