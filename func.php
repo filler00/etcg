@@ -466,5 +466,5 @@ function cardcount ($tcg,$type = '',$cat = '') {
 
 }
 
-if ( file_exists('mods.php') ) { include_once('mods.php'); }
+if ( file_exists(__DIR__  . '/mods.php') ) { include_once('mods.php'); }
 ?>
