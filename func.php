@@ -148,6 +148,7 @@ function show_cards( $tcg, $category, $unique = 0 ) {
 	else {
 		
 		$cards = explode(',',$cards['cards']);
+		$cards = array_map(trim, $cards);
 		if ( $unique == 1 ) { $cards = array_unique($cards); }
 	
 		foreach ( $cards as $card ) {
