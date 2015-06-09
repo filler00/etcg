@@ -182,15 +182,13 @@ function show_doubles( $tcg, $category ) {
 	else {
 		
 		$cards = explode(',',$cards['cards']);
+		$cards = array_map(trim, $cards);
 		$doubles = array_diff_assoc($cards, array_unique($cards));
 
 		if ( !empty($doubles) ) {
 			
 			foreach ( $doubles as $double ) {
-			
-				$double = trim($double);
 				echo '<img src="'.$cardsurl.''.$double.'.'.$format.'" alt="" title="'.$double.'" /> ';
-			
 			}
 		
 		}
