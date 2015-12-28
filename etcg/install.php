@@ -134,7 +134,7 @@ if ( isset($_POST['install']) ) {
 		  `givingcat` text NOT NULL,
 		  `receiving` text NOT NULL,
 		  `receivingcat` text NOT NULL,
-		  `emailcards` int(11) NOT NULL DEFAULT '0',
+		  `emailcards` int(11) NOT NULL DEFAULT '1',
 		  `type` varchar(10) NOT NULL DEFAULT 'outgoing',
 		  `date` date NOT NULL,
 		  PRIMARY KEY (`id`)
