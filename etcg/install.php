@@ -40,7 +40,7 @@ if ( isset($_POST['install']) ) {
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `name` varchar(50) NOT NULL,
 		  `tcg` int(11) NOT NULL,
-		  `value` text NOT NULL,
+		  `value` text NULL,
 		  `easyupdate` int(11) NOT NULL DEFAULT '0',
 		  PRIMARY KEY (`id`)
 		)";
@@ -53,7 +53,7 @@ if ( isset($_POST['install']) ) {
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `tcg` int(11) NOT NULL,
 		  `category` varchar(50) NOT NULL,
-		  `cards` longtext NOT NULL,
+		  `cards` longtext NULL,
 		  `worth` int(11) NOT NULL,
 		  `auto` int(11) NOT NULL DEFAULT '0',
 		  `autourl` varchar(255) NOT NULL DEFAULT 'default',
@@ -83,8 +83,8 @@ if ( isset($_POST['install']) ) {
 		  `uploadurl` varchar(255) NOT NULL DEFAULT 'default',
 		  `format` varchar(8) NOT NULL DEFAULT 'default',
 		  `mastered` int(11) NOT NULL DEFAULT '0',
-		  `mastereddate` date NOT NULL,
-		  `badge` varchar(50) NOT NULL,
+		  `mastereddate` date NULL,
+		  `badge` varchar(50) NULL,
 		  PRIMARY KEY (`id`)
 		)";
 		
@@ -114,10 +114,10 @@ if ( isset($_POST['install']) ) {
 		  `defaultauto` varchar(255) NOT NULL,
 		  `autoupload` int(11) NOT NULL DEFAULT '0',
 		  `lastupdated` date NOT NULL,
-		  `activitylog` longtext NOT NULL,
-		  `activitylogarch` longtext NOT NULL,
-		  `tradelog` longtext NOT NULL,
-		  `tradelogarch` longtext NOT NULL,
+		  `activitylog` longtext NULL,
+		  `activitylogarch` longtext NULL,
+		  `tradelog` longtext NULL,
+		  `tradelogarch` longtext NULL,
 		  PRIMARY KEY (`id`)
 		)";
 		
