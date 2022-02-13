@@ -34,7 +34,7 @@
 		if ( $category == '' ) { $error[] = "The category name must be defined."; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = "Invalid auto value."; }
 		else if ( $priority != 1 && $priority != 2 && $priority != 3 ) { $error[] = "Invalid priority value."; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid Auto URL."; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid Auto URL."; }
 		else if ( $database->num_rows("SELECT * FROM `cards` WHERE `id`=".$catid."") != 1 ) { $error[] = "Invalid category ID."; }
 		else {
 			
@@ -100,7 +100,7 @@
 		if ( $category == '' || $category == 'category name' ) { $error[] = "The category name must be defined."; }
 		else if ( $exists != 0 ) { $error[] = "A category witht that name already exists."; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = "Invalid auto value."; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid Auto URL."; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid Auto URL."; }
 		else {
 		
 			$result = $database->query("INSERT INTO `cards` (`tcg`,`category`,`worth`,`auto`,`autourl`) VALUE ('$id','$category','$worth','$auto','$autourl')");

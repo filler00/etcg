@@ -25,8 +25,8 @@ if ( isset($_POST['install']) ) {
 	if ( $password === '' ) { $error[] = "You must select a password."; }
 	if ( $password !== '' && $password !== $password2 ) { $error[] = "The passwords did not match."; }
 	if ( $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) ) { $error[] = "Invalid email address."; }
-	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid TCG post URL."; }
-	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid eTCG URL."; }
+	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL) ) { $error[] = "Invalid TCG post URL."; }
+	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid eTCG URL."; }
 	if ( $dateformat === '' ) { $error[] = "The date format can't be left blank."; }
 	if ( $dateheaderformat === '' || strpos($dateheaderformat,'[DATE]') === false ) { $error[] = "Invalid date header format."; }
 	if ( $hiatustrading != 1 && $hiatustrading != 0 ) { $error[] = "Invalid value for hiatus trading."; }

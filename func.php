@@ -5,9 +5,7 @@ require_once('etcg/config.php');
 class Sanitize {
 	
 	function clean ($data) {
-			
-		if ( get_magic_quotes_gpc() ) { $data = stripslashes($data); }
-		
+
 		$data = trim(htmlentities(strip_tags($data)));
 		
 		return $data;
