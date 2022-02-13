@@ -8,7 +8,7 @@
 		if ( !$result ) { $error[] = "Could not remove the TCG entry in tcgs table."; }
 		else {
 			
-			$tables = array(additional, cards, collecting, trades);
+			$tables = array('additional', 'cards', 'collecting', 'trades');
 			
 			foreach ( $tables as $table ) {
 				$result = $database->query("DELETE FROM `$table` WHERE `tcg` = '$tcgid'");

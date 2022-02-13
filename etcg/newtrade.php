@@ -87,7 +87,7 @@ if ( isset($_POST['newtrade']) ) {
 		
 		$today = date("Y-m-d");
 		$result = $database->query("INSERT INTO `trades` (`tcg`,`trader`,`email`,`giving`,`givingcat`,`receiving`,`receivingcat`,`type`,`date`) VALUE ('$tcgid','$trader','$email','$giving','$givingcats','$receiving','','$type','$today')");
-		if ( !result ) { $error[] = "Could not add the new trade. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not add the new trade. ".mysqli_error().""; }
 		else { $success[]= "The trade has been added."; }
 		
 	}

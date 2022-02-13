@@ -2,7 +2,7 @@
 
 $database = new Database;
 
-$settings = array(username,email,url,emailmessage,hiatustrading,inactivetrading,etcgurl,dateformat,dateheaderformat);
+$settings = array('username','email','url','emailmessage','hiatustrading','inactivetrading','etcgurl','dateformat','dateheaderformat');
 
 if ( isset($_POST['update']) ) {
 	
