@@ -48,7 +48,7 @@ $releases = json_decode($response, true);
 <?php } } ?>
 
 <div class="content col-12 col-sm-12 col-lg-12">
-	<h1>Dashboard</h2>
+	<h1>Dashboard</h1>
 	
 	<div class="row row-notices clearfix">
 		<div class="col-md-7 panel panel-primary">
