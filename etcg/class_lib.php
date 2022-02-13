@@ -89,6 +89,16 @@ class Database {
 		return $num_rows;
 	
 	}
+
+	function error () {
+
+		$link = $this->connect();
+
+		$result = mysqli_error($link);
+
+		return $result;
+
+	}
 	
 }
 

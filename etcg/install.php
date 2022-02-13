@@ -46,7 +46,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>additional</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>additional</em>. ".$database->error().""; }
 		
 		// Create Cards Table
 		$query = "CREATE TABLE IF NOT EXISTS `cards` (
@@ -63,7 +63,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>cards</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>cards</em>. ".$database->error().""; }
 		
 		// Create Collecting Table
 		$query = "CREATE TABLE IF NOT EXISTS `collecting` (
@@ -89,7 +89,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>collecting</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>collecting</em>. ".$database->error().""; }
 		
 		// Create Settings Table
 		$query = "CREATE TABLE IF NOT EXISTS `settings` (
@@ -100,7 +100,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>settings</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>settings</em>. ".$database->error().""; }
 		
 		// Create TCGs Table
 		$query = "CREATE TABLE IF NOT EXISTS `tcgs` (
@@ -122,7 +122,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>tcgs</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>tcgs</em>. ".$database->error().""; }
 		
 		// Create Trades Table
 		$query = "CREATE TABLE IF NOT EXISTS `trades` (
@@ -141,7 +141,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>trades</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>trades</em>. ".$database->error().""; }
 		
 		// Add Settings
 		$query = "INSERT INTO `settings` (`setting`, `value`) VALUES
@@ -157,7 +157,7 @@ if ( isset($_POST['install']) ) {
 			('dateheaderformat', '$dateheaderformat')";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not populate table <em>settings</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not populate table <em>settings</em>. ".$database->error().""; }
 		
 		if ( !isset($error) ) { $success[] = "Installation has completed. <em>Please delete this file</em>, then feel free to <a href=\"index.php\">log in</a>!"; }
 		

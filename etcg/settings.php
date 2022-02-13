@@ -37,7 +37,7 @@ if ( isset($_POST['update']) ) {
 		if ( $password !== '' ) { $password = sha1("$password".Config::DB_SALT.""); 
 		
 			$result = $database->query("UPDATE `settings` SET `value`='$password' WHERE `setting`='password' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update password. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update password. ".$database->error().""; }
 			else { $success[] = "Your password has been changed."; $_SESSION['password'] = $password; }
 		
 		}
@@ -45,7 +45,7 @@ if ( isset($_POST['update']) ) {
 		foreach ( $settings as $setting ) {
 		
 			$result = $database->query("UPDATE `settings` SET `value`='".$$setting."' WHERE `setting`='$setting' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update $setting. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update $setting. ".$database->error().""; }
 		
 		}
 		

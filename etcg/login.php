@@ -13,7 +13,7 @@ if ( $enablelogin ) {
 			$passwordHash = sha1("$passwordNew".Config::DB_SALT."");
 			
 			$result = $database->query("UPDATE `settings` SET `value`='".$passwordHash."' WHERE `setting`='password' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update the password. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update the password. ".$database->error().""; }
 			else {
 				$message = "Your EasyTCG password has been reset! \n\nNew Password: $passwordNew";
 				$headers = "From: EasyTCG";

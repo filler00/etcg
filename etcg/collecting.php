@@ -82,7 +82,7 @@
 			}
 			
 			$result = $database->query("UPDATE `collecting` SET `sort`='$sort',`cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `format`='$format' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".$database->error().""; }
 			else { $success[] = "The deck has been updated$success2!"; }
 			
 		}
@@ -210,7 +210,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `collecting` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".$database->error().""; }
 			else { $success[] = "The collecting deck and containing cards have been removed."; }
 		
 		}

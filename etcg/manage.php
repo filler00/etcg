@@ -82,7 +82,7 @@
 				if ( !isset($error) || $error == '' ) {
 					
 					$result = $database->query("UPDATE `tcgs` SET `name`='$name',`url`='$url',`cardsurl`='$cardsurl',`cardspath`='$cardspath',`defaultauto`='$defaultauto',`autoupload`='$autoupload',`status`='$status',`format`='$format',`lastupdated`='$lastupdated' WHERE `id`='$id'");
-					if ( !$result ) { $error[] = 'Failed to update the table. '.mysqli_error().''; }
+					if ( !$result ) { $error[] = 'Failed to update the table. '.$database->error().''; }
 					else {
 					
 						$resultt = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id'");
@@ -98,7 +98,7 @@
 								
 								$fieldname = $row['name'];
 								$result = $database->query("UPDATE `additional` SET `value`='$addname', `easyupdate`='$addeu' WHERE `tcg`='$id' AND `name`='$fieldname'");
-								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysqli_error().""; }
+								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".$database->error().""; }
 							
 							}
 							
@@ -109,7 +109,7 @@
 							if ( $newfield != '' && $newfield != 'new field' && $newfield != 'newfield' && $neweu < 2 ) {
 										
 								$result = $database->query("INSERT INTO `additional` (`name`,`tcg`,`value`,`easyupdate`) VALUE ('$newfield','$id','$newvalue','$neweu')");
-								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".mysqli_error().""; }
+								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".$database->error().""; }
 								else { $success[] = "Your changes and/or additions have been made successfully."; }
 							
 							}
@@ -138,7 +138,7 @@
 			if ( $exists === 1 ) {
 			
 				$result  = $database->query("DELETE FROM `additional` WHERE `id` = '$fieldid' LIMIT 1");
-				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".mysqli_error().""; }
+				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".$database->error().""; }
 				else { $success[] = "The field has been removed."; }
 			
 			}

@@ -75,7 +75,7 @@
 			}
 		
 			$result = $database->query("UPDATE `cards` SET `category`='$category', `cards`='$cards', `worth`='$worth', `auto`='$auto', `autourl`='$autourl', `format`='$format', `priority`='$priority' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update the category. ".$database->errors().""; }
 			else { $success[] = "Category <em>$category</em> was updated successfully!"; }
 		
 		}
@@ -104,7 +104,7 @@
 		else {
 		
 			$result = $database->query("INSERT INTO `cards` (`tcg`,`category`,`worth`,`auto`,`autourl`) VALUE ('$id','$category','$worth','$auto','$autourl')");
-			if ( !$result ) { $error[] = "Could not update the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update the category. ".$database->error().""; }
 			else { $success[] = "Category <em>$category</em> was created successfully."; }
 		
 		}
@@ -119,7 +119,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `cards` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the category. ".$database->error().""; }
 			else { $success[] = "The category has been removed."; }
 		
 		}
