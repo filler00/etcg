@@ -75,7 +75,7 @@
 			}
 		
 			$result = $database->query("UPDATE `cards` SET `category`='$category', `cards`='$cards', `worth`='$worth', `auto`='$auto', `autourl`='$autourl', `format`='$format', `priority`='$priority' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update the category. ".$database->errors().""; }
+			if ( !$result ) { $error[] = "Could not update the category. ".$database->error().""; }
 			else { $success[] = "Category <em>$category</em> was updated successfully!"; }
 		
 		}
