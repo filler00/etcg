@@ -71,8 +71,8 @@
 			else if ( $format == '' ) { $error[] = "Invalid Format field value."; }
 			else if ( $lastupdated == '' ) { $error[] = "Invalid Last Updated field value."; }
 			else if ( $status != 'active' && $status != 'hiatus' && $status != 'inactive' ) { $error[] = "Invalid Status field value."; }
-			else if ( !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) || !filter_var($cardsurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
-			else if ( $defaultauto != '' && $defaultauto != '/' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
+			else if ( !filter_var($url, FILTER_VALIDATE_URL) || !filter_var($cardsurl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
+			else if ( $defaultauto != '' && $defaultauto != '/' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
 			else if ( $autoupload != '0' && $autoupload != '1'  ) { $error[] = "Invalid value for the Auto Upload field."; }
 			else if ( $newfield != '' && $newfield != 'new field' && $exists2 != 0 ) { $error[] = "An additional field with that name already exists."; }
 			else {
@@ -82,7 +82,7 @@
 				if ( !isset($error) || $error == '' ) {
 					
 					$result = $database->query("UPDATE `tcgs` SET `name`='$name',`url`='$url',`cardsurl`='$cardsurl',`cardspath`='$cardspath',`defaultauto`='$defaultauto',`autoupload`='$autoupload',`status`='$status',`format`='$format',`lastupdated`='$lastupdated' WHERE `id`='$id'");
-					if ( !$result ) { $error[] = 'Failed to update the table. '.mysqli_error().''; }
+					if ( !$result ) { $error[] = 'Failed to update the table. '.$database->error().''; }
 					else {
 					
 						$resultt = $database->query("SELECT * FROM `additional` WHERE `tcg`='$id'");
@@ -98,7 +98,7 @@
 								
 								$fieldname = $row['name'];
 								$result = $database->query("UPDATE `additional` SET `value`='$addname', `easyupdate`='$addeu' WHERE `tcg`='$id' AND `name`='$fieldname'");
-								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysqli_error().""; }
+								if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".$database->error().""; }
 							
 							}
 							
@@ -109,7 +109,7 @@
 							if ( $newfield != '' && $newfield != 'new field' && $newfield != 'newfield' && $neweu < 2 ) {
 										
 								$result = $database->query("INSERT INTO `additional` (`name`,`tcg`,`value`,`easyupdate`) VALUE ('$newfield','$id','$newvalue','$neweu')");
-								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".mysqli_error().""; }
+								if ( !$result ) { $error[] = "Failed to insert the new additonal field. ".$database->error().""; }
 								else { $success[] = "Your changes and/or additions have been made successfully."; }
 							
 							}
@@ -138,7 +138,7 @@
 			if ( $exists === 1 ) {
 			
 				$result  = $database->query("DELETE FROM `additional` WHERE `id` = '$fieldid' LIMIT 1");
-				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".mysqli_error().""; }
+				if ( !$result ) { $error[] = "There was an error while attempting to remove the field. ".$database->error().""; }
 				else { $success[] = "The field has been removed."; }
 			
 			}

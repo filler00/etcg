@@ -42,7 +42,7 @@
 		else if ( $pending === '' ) { $error[] = 'Please define a pending card.'; }
 		else if ( $puzzle != 1 && $puzzle != 0 ) { $error[] = 'Invalid Puzzle value.'; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = 'Invalid Auto value.'; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'Invalid auto upload URL.'; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = 'Invalid auto upload URL.'; }
 		else {
 			
 			$deckinfo = $database->get_assoc("SELECT * FROM `collecting` WHERE `id`='$catid'");
@@ -113,7 +113,7 @@
 		else if ( $puzzle != 1 && $puzzle != 0 ) { $error[] = 'Invalid Puzzle value.'; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = 'Invalid Auto value.'; }
 		else if ( $findcards != 1 && $findcards != 0 ) { $error[] = 'Invalid FindCards value.'; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'Invalid auto upload URL.'; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = 'Invalid auto upload URL.'; }
 		else {
 			
 			if ( $findcards == 0 ) {

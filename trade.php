@@ -71,7 +71,7 @@
 		
 		if ( $name == '' || $email == ''|| $website == '' || $website == 'http://' || $tcg == ''|| $wants == ''|| $offer == ''  ) { $error[] = 'Please fill out the form completely. All fields are mandatory except for the comments field.'; }
 		else if ( !filter_var($email, FILTER_VALIDATE_EMAIL) ) { $error[] = 'The supplied email was invalid.'; }
-		else if ( !filter_var($website, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'The supplied URL was invalid. Make sure you include <em>http://</em>.'; }
+		else if ( !filter_var($website, FILTER_VALIDATE_URL) ) { $error[] = 'The supplied URL was invalid. Make sure you include <em>http://</em>.'; }
 		else if ( $validcards === false ) { $error[] = "One or more cards is invalid. Check that you're separating card names with commas, and that cardnames are spelled out and formatted correctly (cardname00)."; }
 		else if ( $cardsfound !== true ) { $error[] = "One or more cards that you requested were not found in my collection. Please check your spelling, and make sure you're requesting cards from categories marked as <em>trading</em>. If you're unsure, leave a note about it in the comments field."; }
 		else {
@@ -125,7 +125,7 @@
 			
 			$today = date("Y-m-d");
 			$result = $database->query("INSERT INTO `trades` (`tcg`,`trader`,`email`,`giving`,`givingcat`,`receiving`,`receivingcat`,`type`,`date`) VALUE ('$tcg','$name','$email','$giving','$givingcats','$offer','','incoming','$today')");
-			if ( !result ) { $error[] = "Could not add the new trade. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not add the new trade. ".$database->error().""; }
 			
 			$youremail = $database->get_assoc("SELECT `value` FROM `settings` WHERE `setting` = 'email'");
 			$youremail = $youremail['value'];

@@ -42,7 +42,7 @@
 		else if ( $pending === '' ) { $error[] = 'Please define a pending card.'; }
 		else if ( $puzzle != 1 && $puzzle != 0 ) { $error[] = 'Invalid Puzzle value.'; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = 'Invalid Auto value.'; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'Invalid auto upload URL.'; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = 'Invalid auto upload URL.'; }
 		else {
 			
 			$deckinfo = $database->get_assoc("SELECT * FROM `collecting` WHERE `id`='$catid'");
@@ -82,7 +82,7 @@
 			}
 			
 			$result = $database->query("UPDATE `collecting` SET `sort`='$sort',`cards`='$cards', `worth`='$worth', `count`='$count', `break`='$break', `filler`='$filler', `pending`='$pending', `puzzle`='$puzzle', `auto`='$auto', `uploadurl`='$autourl', `format`='$format' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Failed to update the collecting deck. ".$database->error().""; }
 			else { $success[] = "The deck has been updated$success2!"; }
 			
 		}
@@ -119,7 +119,7 @@
 		else if ( $puzzle != 1 && $puzzle != 0 ) { $error[] = 'Invalid Puzzle value.'; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = 'Invalid Auto value.'; }
 		else if ( $findcards != 1 && $findcards != 0 ) { $error[] = 'Invalid FindCards value.'; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = 'Invalid auto upload URL.'; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = 'Invalid auto upload URL.'; }
 		else {
 			
 			if ( $findcards == 0 && $cards !== '' ) {
@@ -210,7 +210,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `collecting` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the collecting set. ".$database->error().""; }
 			else { $success[] = "The collecting deck and containing cards have been removed."; }
 		
 		}

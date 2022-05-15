@@ -28,8 +28,8 @@ if ( isset($_POST['submit']) ) {
 	else if ( $autoupload === '' ) { $error[] = "The Auto Upload field can't be left blank."; }
 	else if ( $status == '' ) { $error[] = "The Status field can't be left blank."; }
 	else if ( $format == '' ) { $error[] = "The Format field can't be left blank."; }
-	else if ( !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) || !filter_var($cardsurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
-	else if ( $defaultauto != '' && $defaultauto != '/' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
+	else if ( !filter_var($url, FILTER_VALIDATE_URL) || !filter_var($cardsurl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
+	else if ( $defaultauto != '' && $defaultauto != '/' && $defaultauto != 'http://' && !filter_var($defaultauto, FILTER_VALIDATE_URL) ) { $error[] = "Invalid URL. Please include <em>http://</em>."; }
 	else if ( $autoupload != '0' && $autoupload != '1'  ) { $error[] = "Invalid value for the Auto Upload field."; }
 	else {
 		
@@ -37,7 +37,7 @@ if ( isset($_POST['submit']) ) {
 		
 		$result = $database->query("INSERT INTO `tcgs` (`name`,`url`,`cardsurl`,`cardspath`,`defaultauto`,`autoupload`,`lastupdated`,`status`,`format`) VALUE ('$name','$url','$cardsurl','$cardspath','$defaultauto','$autoupload','$today','$status','$format')");
 		
-		if ( !$result ) { $error[] = "Error inserting row. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Error inserting row. ".$database->error().""; }
 		else {
 			
 			$tcginfo = $database->get_assoc("SELECT * FROM `tcgs` WHERE `name`='$name' LIMIT 1");
@@ -53,7 +53,7 @@ if ( isset($_POST['submit']) ) {
 						$numrows = $database->num_rows("SELECT * FROM `additional` WHERE `name`='$field' AND `tcg`='$tcgid'");
 						if ( $numrows == 0 ) {
 							$result = $database->query("INSERT INTO `additional` (`name`,`tcg`) VALUE ('$field','$tcgid')");
-							if ( !$result ) { $error[] = "Error inserting row. ".mysqli_error().""; }
+							if ( !$result ) { $error[] = "Error inserting row. ".$database->error().""; }
 						}
 						else { $error[] = "Error adding additional fields. Fields can't share the same name."; }
 					}

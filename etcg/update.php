@@ -57,7 +57,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 			// Update activity log first, if changed
 			if ( $tcginfo['activitylog'] != $activitylog ) {
 				$result = $database->query("UPDATE `tcgs` SET `activitylog`='$activitylog' WHERE `id`='$id' LIMIT 1");
-				if ( !$result ) { $error[] = "Could not update the activity log. ".mysqli_error().""; }
+				if ( !$result ) { $error[] = "Could not update the activity log. ".$database->error().""; }
 			}
 			
 			// Insert the new log entry, if supplied
@@ -81,7 +81,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 				else { $tradelog = "$logdate\n$log\n\n".$oldlog.""; }
 				
 				$result = $database->query("UPDATE `tcgs` SET `$logtype`='$tradelog', `lastupdated`='$today' WHERE `id`='$id' LIMIT 1");
-				if ( !$result ) { $error[] = "Failed to insert new entry into the $logtype log. ".mysqli_error().""; } else { $success[] = "Inserted new log entry."; }
+				if ( !$result ) { $error[] = "Failed to insert new entry into the $logtype log. ".$database->error().""; } else { $success[] = "Inserted new log entry."; }
 			}
 			
 			// Insert new cards, if any
@@ -177,7 +177,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 							$catcards = implode(', ',$catcards);
 							
 							$result = $database->query("UPDATE `cards` SET `cards`='$catcards' WHERE `tcg`='$id' AND `category`='".$cardscat[$i]."'");
-							if ( !$result ) { $error[] = "Could not add cards to category '".$cardscat[$i]."'. ".mysqli_error().""; }
+							if ( !$result ) { $error[] = "Could not add cards to category '".$cardscat[$i]."'. ".$database->error().""; }
 						
 						}
 						
@@ -200,7 +200,7 @@ if ( !isset($_GET['id']) || $_GET['id'] == '' ) {
 					
 					$fieldname = $row['name'];
 					$result = $database->query("UPDATE `additional` SET `value`='$addname' WHERE `tcg`='$id' AND `name`='$fieldname' LIMIT 1");
-					if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".mysqli_error().""; }
+					if ( !$result ) { $error[] = "Failed to update the aditional field '$fieldname'. ".$database->error().""; }
 				
 				}
 				

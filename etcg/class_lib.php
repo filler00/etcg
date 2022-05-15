@@ -5,8 +5,6 @@ require_once('config.php');
 class Sanitize {
 	
 	function clean ($data) {
-			
-		if ( get_magic_quotes_gpc() ) { $data = stripslashes($data); }
 		
 		$data = trim(htmlentities(strip_tags($data)));
 		
@@ -90,6 +88,16 @@ class Database {
 		
 		return $num_rows;
 	
+	}
+
+	function error () {
+
+		$link = $this->connect();
+
+		$result = mysqli_error($link);
+
+		return $result;
+
 	}
 	
 }

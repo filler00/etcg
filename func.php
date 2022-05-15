@@ -5,9 +5,7 @@ require_once('etcg/config.php');
 class Sanitize {
 	
 	function clean ($data) {
-			
-		if ( get_magic_quotes_gpc() ) { $data = stripslashes($data); }
-		
+
 		$data = trim(htmlentities(strip_tags($data)));
 		
 		return $data;
@@ -34,7 +32,7 @@ class Database {
 	function connect () {
 	
 		$link = @mysqli_connect( Config::DB_SERVER , Config::DB_USER , Config::DB_PASSWORD, Config::DB_DATABASE )
-		or die( "Couldn't connect to MYSQL: ".mysqli_error() );
+		or die( "Couldn't connect to MYSQL: ".mysqli_error($link) );
 		
 		return $link;
 		
@@ -56,7 +54,7 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$assoc = mysqli_fetch_assoc($result);
 		
@@ -70,7 +68,7 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$array = mysqli_fetch_array($result);
 		
@@ -84,13 +82,23 @@ class Database {
 		
 		$result = mysqli_query($link, $query);
 		
-		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error() ); }
+		if ( !$result ) { die ( "Couldn't process query: ".mysqli_error($link) ); }
 		
 		$num_rows = mysqli_num_rows($result);
 		
 		return $num_rows;
 	
 	}
+
+    function error () {
+
+        $link = $this->connect();
+
+        $result = mysqli_error($link);
+
+        return $result;
+
+    }
 	
 }
 
@@ -148,7 +156,7 @@ function show_cards( $tcg, $category, $unique = 0 ) {
 	else {
 		
 		$cards = explode(',',$cards['cards']);
-		$cards = array_map(trim, $cards);
+		$cards = array_map('trim', $cards);
 		if ( $unique == 1 ) { $cards = array_unique($cards); }
 	
 		foreach ( $cards as $card ) {
@@ -182,7 +190,7 @@ function show_doubles( $tcg, $category ) {
 	else {
 		
 		$cards = explode(',',$cards['cards']);
-		$cards = array_map(trim, $cards);
+		$cards = array_map('trim', $cards);
 		$doubles = array_diff_assoc($cards, array_unique($cards));
 
 		if ( !empty($doubles) ) {

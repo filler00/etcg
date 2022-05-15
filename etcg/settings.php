@@ -2,7 +2,7 @@
 
 $database = new Database;
 
-$settings = array(username,email,url,emailmessage,hiatustrading,inactivetrading,etcgurl,dateformat,dateheaderformat);
+$settings = array('username','email','url','emailmessage','hiatustrading','inactivetrading','etcgurl','dateformat','dateheaderformat');
 
 if ( isset($_POST['update']) ) {
 	
@@ -26,8 +26,8 @@ if ( isset($_POST['update']) ) {
 	if ( $username === '' ) { $error[] = "Your username can't be left blank."; }
 	if ( $password !== '' && $password !== $password2 ) { $error[] = "The passwords did not match."; }
 	if ( $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) ) { $error[] = "Invalid email address."; }
-	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid TCG post URL."; }
-	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid eTCG URL."; }
+	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL) ) { $error[] = "Invalid TCG post URL."; }
+	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid eTCG URL."; }
 	if ( $dateformat === '' ) { $error[] = "The date format can't be left blank."; }
 	if ( $dateheaderformat === '' || strpos($dateheaderformat,'[DATE]') === false ) { $error[] = "Invalid date header format."; }
 	if ( $hiatustrading != 1 && $hiatustrading != 0 ) { $error[] = "Invalid value for hiatus trading."; }
@@ -37,7 +37,7 @@ if ( isset($_POST['update']) ) {
 		if ( $password !== '' ) { $password = sha1("$password".Config::DB_SALT.""); 
 		
 			$result = $database->query("UPDATE `settings` SET `value`='$password' WHERE `setting`='password' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update password. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update password. ".$database->error().""; }
 			else { $success[] = "Your password has been changed."; $_SESSION['password'] = $password; }
 		
 		}
@@ -45,7 +45,7 @@ if ( isset($_POST['update']) ) {
 		foreach ( $settings as $setting ) {
 		
 			$result = $database->query("UPDATE `settings` SET `value`='".$$setting."' WHERE `setting`='$setting' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update $setting. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update $setting. ".$database->error().""; }
 		
 		}
 		

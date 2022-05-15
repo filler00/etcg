@@ -34,7 +34,7 @@
 		if ( $category == '' ) { $error[] = "The category name must be defined."; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = "Invalid auto value."; }
 		else if ( $priority != 1 && $priority != 2 && $priority != 3 ) { $error[] = "Invalid priority value."; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid Auto URL."; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid Auto URL."; }
 		else if ( $database->num_rows("SELECT * FROM `cards` WHERE `id`=".$catid."") != 1 ) { $error[] = "Invalid category ID."; }
 		else {
 			
@@ -75,7 +75,7 @@
 			}
 		
 			$result = $database->query("UPDATE `cards` SET `category`='$category', `cards`='$cards', `worth`='$worth', `auto`='$auto', `autourl`='$autourl', `format`='$format', `priority`='$priority' WHERE `id`='$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "Could not update the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update the category. ".$database->error().""; }
 			else { $success[] = "Category <em>$category</em> was updated successfully!"; }
 		
 		}
@@ -100,11 +100,11 @@
 		if ( $category == '' || $category == 'category name' ) { $error[] = "The category name must be defined."; }
 		else if ( $exists != 0 ) { $error[] = "A category witht that name already exists."; }
 		else if ( $auto != 1 && $auto != 0 ) { $error[] = "Invalid auto value."; }
-		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid Auto URL."; }
+		else if ( $autourl != 'default' && !filter_var($autourl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid Auto URL."; }
 		else {
 		
 			$result = $database->query("INSERT INTO `cards` (`tcg`,`category`,`worth`,`auto`,`autourl`) VALUE ('$id','$category','$worth','$auto','$autourl')");
-			if ( !$result ) { $error[] = "Could not update the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "Could not update the category. ".$database->error().""; }
 			else { $success[] = "Category <em>$category</em> was created successfully."; }
 		
 		}
@@ -119,7 +119,7 @@
 		if ( $exists === 1 ) {
 		
 			$result  = $database->query("DELETE FROM `cards` WHERE `id` = '$catid' LIMIT 1");
-			if ( !$result ) { $error[] = "There was an error while attempting to remove the category. ".mysqli_error().""; }
+			if ( !$result ) { $error[] = "There was an error while attempting to remove the category. ".$database->error().""; }
 			else { $success[] = "The category has been removed."; }
 		
 		}

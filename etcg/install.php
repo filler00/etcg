@@ -25,8 +25,8 @@ if ( isset($_POST['install']) ) {
 	if ( $password === '' ) { $error[] = "You must select a password."; }
 	if ( $password !== '' && $password !== $password2 ) { $error[] = "The passwords did not match."; }
 	if ( $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) ) { $error[] = "Invalid email address."; }
-	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid TCG post URL."; }
-	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ) { $error[] = "Invalid eTCG URL."; }
+	if ( $url === '' || !filter_var($url, FILTER_VALIDATE_URL) ) { $error[] = "Invalid TCG post URL."; }
+	if ( $etcgurl === '' || !filter_var($etcgurl, FILTER_VALIDATE_URL) ) { $error[] = "Invalid eTCG URL."; }
 	if ( $dateformat === '' ) { $error[] = "The date format can't be left blank."; }
 	if ( $dateheaderformat === '' || strpos($dateheaderformat,'[DATE]') === false ) { $error[] = "Invalid date header format."; }
 	if ( $hiatustrading != 1 && $hiatustrading != 0 ) { $error[] = "Invalid value for hiatus trading."; }
@@ -40,20 +40,20 @@ if ( isset($_POST['install']) ) {
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `name` varchar(50) NOT NULL,
 		  `tcg` int(11) NOT NULL,
-		  `value` text NOT NULL,
+		  `value` text NULL,
 		  `easyupdate` int(11) NOT NULL DEFAULT '0',
 		  PRIMARY KEY (`id`)
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>additional</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>additional</em>. ".$database->error().""; }
 		
 		// Create Cards Table
 		$query = "CREATE TABLE IF NOT EXISTS `cards` (
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `tcg` int(11) NOT NULL,
 		  `category` varchar(50) NOT NULL,
-		  `cards` longtext NOT NULL,
+		  `cards` longtext NULL,
 		  `worth` int(11) NOT NULL,
 		  `auto` int(11) NOT NULL DEFAULT '0',
 		  `autourl` varchar(255) NOT NULL DEFAULT 'default',
@@ -63,7 +63,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>cards</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>cards</em>. ".$database->error().""; }
 		
 		// Create Collecting Table
 		$query = "CREATE TABLE IF NOT EXISTS `collecting` (
@@ -83,13 +83,13 @@ if ( isset($_POST['install']) ) {
 		  `uploadurl` varchar(255) NOT NULL DEFAULT 'default',
 		  `format` varchar(8) NOT NULL DEFAULT 'default',
 		  `mastered` int(11) NOT NULL DEFAULT '0',
-		  `mastereddate` date NOT NULL,
-		  `badge` varchar(50) NOT NULL,
+		  `mastereddate` date NULL,
+		  `badge` varchar(50) NULL,
 		  PRIMARY KEY (`id`)
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>collecting</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>collecting</em>. ".$database->error().""; }
 		
 		// Create Settings Table
 		$query = "CREATE TABLE IF NOT EXISTS `settings` (
@@ -100,7 +100,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>settings</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>settings</em>. ".$database->error().""; }
 		
 		// Create TCGs Table
 		$query = "CREATE TABLE IF NOT EXISTS `tcgs` (
@@ -114,15 +114,15 @@ if ( isset($_POST['install']) ) {
 		  `defaultauto` varchar(255) NOT NULL,
 		  `autoupload` int(11) NOT NULL DEFAULT '0',
 		  `lastupdated` date NOT NULL,
-		  `activitylog` longtext NOT NULL,
-		  `activitylogarch` longtext NOT NULL,
-		  `tradelog` longtext NOT NULL,
-		  `tradelogarch` longtext NOT NULL,
+		  `activitylog` longtext NULL,
+		  `activitylogarch` longtext NULL,
+		  `tradelog` longtext NULL,
+		  `tradelogarch` longtext NULL,
 		  PRIMARY KEY (`id`)
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>tcgs</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>tcgs</em>. ".$database->error().""; }
 		
 		// Create Trades Table
 		$query = "CREATE TABLE IF NOT EXISTS `trades` (
@@ -141,7 +141,7 @@ if ( isset($_POST['install']) ) {
 		)";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not create table <em>trades</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not create table <em>trades</em>. ".$database->error().""; }
 		
 		// Add Settings
 		$query = "INSERT INTO `settings` (`setting`, `value`) VALUES
@@ -157,7 +157,7 @@ if ( isset($_POST['install']) ) {
 			('dateheaderformat', '$dateheaderformat')";
 		
 		$result = $database->query($query);
-		if ( !$result ) { $error[] = "Could not populate table <em>settings</em>. ".mysqli_error().""; }
+		if ( !$result ) { $error[] = "Could not populate table <em>settings</em>. ".$database->error().""; }
 		
 		if ( !isset($error) ) { $success[] = "Installation has completed. <em>Please delete this file</em>, then feel free to <a href=\"index.php\">log in</a>!"; }
 		
