@@ -1,11 +1,14 @@
-#EasyTCG
+# EasyTCG
+
 - For updates & release details, please see: https://github.com/tooblue/etcg/releases
 - For documentation & how-to's, please see: https://github.com/tooblue/etcg/wiki
 
-##LICENSE
+## LICENSE
+
 EasyTCG is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
-##SPECIFICATIONS
+## SPECIFICATIONS
+
 1. PHP 5.2 and up **
 2. 1 MySQL Database (MySQL v4.1.3+)
 3. JavaScript enabled
@@ -14,7 +17,8 @@ EasyTCG is open-sourced software licensed under the [MIT license](http://opensou
 
 *There are also known bugs for the `filter_var()` function in PHP 5.2.13. If you have this version of PHP, you also will need to apply the modification mentioned above, or attempt to upgrade your PHP installation to a more recent version.*
 
-##INSTALLATION
+## INSTALLATION
+
 *Follow these instructions if you are installing eTCG for the first time.*
 
 1. If you haven't already, create a database to use for EasyTCG.
@@ -25,7 +29,8 @@ EasyTCG is open-sourced software licensed under the [MIT license](http://opensou
 6. Direct your browser to `install.php` (inside the 'etcg' directory) and follow the insructions on the page to set up your database. Remember to **DELETE THIS FILE WHEN YOU'RE DONE**.
 7. At this point, installation should be complete and you should be able to log in to your admin panel and start adding your TCGs, cards, etc. Continue reading for details and how-to's for various features. The last section explains how to set up your TCG Post (ie. displaying your cards, logs, etc.).
 
-##UPGRADING
+## UPGRADING
+
 *Follow these instructions if you are upgrading from an older version of eTCG. __ALWAYS make a backup of your current files and database before attempting to upgrade__*
 
 1. DELETE the `etcg/config.php` and `etcg/install.php` files included in the download. You should continue to use your old `config.php` file, and `install.php`is only necessary for first-time installs - **Do NOT attempt to run `install.php`**.
